@@ -62,9 +62,9 @@ library(fontawesome)
 
 # What is Data Science?
 
-- Google it! (or Bing, Yahoo, DuckDuckGo, Ecosia, Wikipedia, etc)
+- Read from the printed definitions in your table
 
-- Or read from the printed flyers
+- or Google it! (or Bing, Yahoo, DuckDuckGo, Ecosia, Wikipedia, etc)
 
 --
 
