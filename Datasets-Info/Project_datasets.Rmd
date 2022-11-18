@@ -817,27 +817,33 @@ cbind(unsw_data, pred = predict(model, newdata = unsw_data)) %>%
 
 ---
 
-## Air quality:
 
-https://posit.cloud/content/4990379
+---
 
-## Big economic data:
+class: middle
 
-https://posit.cloud/content/4990530
+# Choose your project
 
-##Emotions:
+- `r fa(name = "hand-holding-heart")` Psychology: Emotions during the pandemic 
 
-https://posit.cloud/content/4990398
-
-## Small automotive business
-
-https://posit.cloud/content/4990395
-
-## Video Games
-
-https://posit.cloud/content/4990394
+  - https://posit.cloud/content/4990398
 
 
+- `r fa(name = "lightbulb")` Business insights: Small automotive business
+
+  - https://posit.cloud/content/4990395
+
+- `r fa(name = "gamepad")` Entertainment: Video Games reviews
+
+  - https://posit.cloud/content/4990394
+
+- `r fa(name = "arrow-trend-up")` Economics: Big economic data
+
+  - https://posit.cloud/content/4990530
+
+- `r fa(name = "cloud-sun-rain")` Climate: Weather & Air Quality in Schools
+
+  - https://posit.cloud/content/4990379
 ---
 
 # Thanks!
