@@ -1,0 +1,827 @@
+---
+title: "Choose your project"
+institute: "UNSW Data Science Hub"
+date: "21-11-2022"
+output:
+  xaringan::moon_reader:
+    css: [xaringan-themer.css, "css/footer.css"]
+    lib_dir: libs
+    nature:
+      countdown: 60000
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: true
+editor_options:
+  chunk_output_type: console
+---
+layout: true
+
+<div class="my-footer"><span>UNSW Data Science Hub / <a href='https://www.unsw.edu.au/research/udash'>uDASH</a></span></div>
+
+<!-- this adds the link footer to all slides, depends on my-footer class in css-->
+
+```{r xaringan-logo, echo=FALSE}
+xaringanExtra::use_logo(
+  image_url = "images/uDASH-logo.jpg",
+  position = xaringanExtra::css_position(top = "1em", right = "1em")
+)
+```
+
+```{r setup, include=FALSE}
+# https://www.garrickadenbuie.com/blog/decouple-code-and-output-in-xaringan-slides/
+knitr::opts_chunk$set(fig.showtext=TRUE,fig.dim=c(4.8, 4.5), fig.retina=2, out.width="100%",collapse=TRUE)
+```
+```{r packages, include=FALSE}
+library(fontawesome)
+require(dplyr)
+require(ggplot2)
+require(tsibble)
+require(readr)
+require(lubridate)
+require(janitor)
+library(tidyr)
+library(stringr)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+uDASH_colors <- c(blue1="#CEDAD5", blue2="#16938F", blackish="#0E0F0F", green1="#79C45E", green2="#68A170", brownish="#949494", bluish="#769CBE", greenish="#4E722F")
+
+style_duo_accent(
+  primary_color = uDASH_colors[5], secondary_color = uDASH_colors[1],
+  header_font_google = google_font("Roboto Slab"),
+  text_font_google   = google_font("Roboto", "300", "300i"),
+  code_font_google   = google_font("Roboto Mono"),
+  code_font_size = '0.7rem'
+)
+# for ggplot2
+theme_set(theme_xaringan())
+```
+
+---
+
+class: inverse, center, middle
+
+
+# Lifecycle of your Data Science Project
+
+---
+
+# Lifecycle of your Data Science Project
+
+- Problem description & data acquisition
+- Data preparation
+  - Data cleaning
+  - Transformation
+- Exploratory data analysis
+- Data modeling
+- Visualisation and communication
+
+---
+
+## Goal: Understand the problem and get the data
+
+(Monday / Tuesday)
+
+- Problem description
+  - Understand the context
+  - What is the motivation?
+  - Questions to answer
+- Data acquisition
+  - Explore the data source(s)
+  - Get the data (download, copy or install...)
+- Data preparation / cleaning
+  - Filter and select cases/variables
+  - Outliers
+  - Transformation of variables
+
+---
+
+## Goal: Discover patterns in your data
+
+(Tuesday)
+
+- Exploratory data analysis (EDA)
+  - Describe properties of the variables
+  - Quantitative/qualitative
+  - Data summaries
+  - Visual summaries
+
+---
+
+## Goal: Test potential solutions
+
+(Wednesday)
+
+- Data modeling
+  - Potential explanations (models)
+  - Does the data fit the model(s)?
+  - Which is the best model
+
+---
+
+## Goal: Tell the story
+
+(Thursday and Friday)
+- Visualisation
+  - View data from different angles
+  - Use colours and other aesthetics
+  - Combine data and models in plots
+  - Highlight your findings
+- Communication
+  - Tell your story: problem, data, model and result
+  - Conclusions supported by the data!
+
+---
+
+class: inverse, middle
+
+# Projects
+
+- `r fa(name = "hand-holding-heart")` Psychology: Emotions during the pandemic
+
+- `r fa(name = "lightbulb")` Business insights: Small automotive business
+
+- `r fa(name = "gamepad")` Entertainment: Video Games reviews
+
+- `r fa(name = "arrow-trend-up")` Economics: Big economic data
+
+- `r fa(name = "cloud-sun-rain")` Climate: Weather & Air Quality in Schools
+
+---
+
+class: inverse, center, middle
+
+# `r fa(name = "hand-holding-heart")` Psychology: Emotions during the pandemic
+
+> A robust finding in emotion literature is the relationship between age and improved emotional experience... it is well-established that older individuals report more elevated emotional wellbeing than younger individuals...
+
+***Does the emotional wellbeing advantage of older adults persisted throughout the pandemic?***
+
+---
+
+## Emotions ...
+
+- Primary variables:
+  - frequency and intensity of positive emotions
+  - frequency and intensity of negative emotions
+  - age
+- Other variables (personality traits):
+  - Openness,
+  - Conscientiousness,
+  - Extraversion,
+  - Agreeableness and
+  - Emotional Stability
+
+---
+
+## Emotions ... Data
+
+Data and metadata available here:
+[`r fa(name = "link")` //osf.io/h7uqv/](https://osf.io/h7uqv/)
+
+You can download your file from R!
+
+```{r, eval=FALSE}
+download.file(url="https://osf.io/download/zpfya/",
+              destfile="data/AgeAdvantagesEmotionCovid_Data.csv")
+
+emotions_data <- read.csv("data/AgeAdvantagesEmotionCovid_Data.csv")
+```
+
+```{r include=FALSE}
+dataset.file <- "data/AgeAdvantagesEmotionCovid_Data.csv"
+if (!file.exists(dataset.file)) {
+  download.file(url="https://osf.io/download/zpfya/",
+              destfile=dataset.file)
+}
+emotions_data <- read.csv(dataset.file)
+```
+
+
+---
+
+## Emotions ... Cleaning and transformation
+
+Select and rename your variables
+
+```{r}
+tibble(emotions_data) %>% slice_head(n=5)
+```
+
+---
+
+## Emotions ... Explore
+
+Range of ages, mean and extreme values of intensity and frequency of emotions, personality traits
+
+.pull-left[
+```{r emo-eda, eval=FALSE}
+ggplot(data=emotions_data,
+       aes(x=age)) +
+  geom_histogram(bins=14)
+```
+]
+
+.pull-right[
+```{r emo-eda-out, ref.label="emo-eda", echo=FALSE, warning=FALSE, message=FALSE}
+```
+]
+
+
+---
+
+## Emotions ... Model
+
+Increase or decrease of emotions by age? differences between groups?
+
+```{r }
+model <- lm(avg_i_neg ~ age,
+   emotions_data)
+summary(model)
+```
+
+---
+
+## Emotions ... Visualise
+
+Combine scatterplot and regression lines
+
+.pull-left[
+```{r emo-viz, eval=FALSE}
+ggplot(data=emotions_data,
+       aes(x=age,y=avg_i_neg)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+]
+
+.pull-right[
+```{r emo-viz-out, ref.label="emo-viz", echo=FALSE, warning=FALSE,message=FALSE}
+```
+]
+
+---
+---
+
+class: inverse, center, middle
+
+# `r fa(name = "lightbulb")` Business insights: Small automotive business
+
+> By using data analytics, small businesses can gain insights into their customers, their products, and their operations. This information can help them make better decisions about how to run their business.
+
+***Which customers contribute more income around the year?***
+
+
+---
+
+## Small business ...
+
+This is a dataset of the jobs performed by a small automotive business located in Botany in 2010-2020.  The dataset is itemised by each job performed and further by invoice number such that several jobs (and several cars) can be on a single invoice.
+
+- Variables of interest:
+  - Date of the job,
+  - Cost of the job,
+- Other variables:
+  - Postcode of costumer,
+  - Car make and model
+  - Date of last service,
+  - Odometer reading
+
+---
+
+## Small business ... Data
+
+The data will be provided by uDASH staff.
+
+
+```{r message=FALSE}
+auto_data <- read_csv("data/small_business_invoices.csv")
+
+auto_data %>% slice(1:5)
+```
+
+---
+
+## Small business ... Cleaning and transformation
+
+The dataset was entered by hand and thus has inconsistencies and omissions that will require cleaning.  Some data cleaning has already been performed.
+
+TO DO: Assign data type (numeric, factor, date), handle missing information, group and summarise, etc.
+
+
+```{r}
+auto_data <-
+  auto_data %>%
+  mutate(transaction_date=dmy(TRANSACTION_DATE),
+         service_date=dmy(LAST_SERVICE)) %>%
+  filter(!is.na(transaction_date)) %>%
+  group_by(INVOICE_NO,Postcode,transaction_date,service_date) %>%
+  summarise(total_cost=sum(TOTAL),vehicle_year=max(VEHICLE_YEAR))
+```
+
+---
+
+## Small business ...  Explore
+
+Histogram of variables
+
+.pull-left[
+```{r smallbiz-eda, eval=FALSE}
+ggplot(auto_data) +
+  geom_histogram(aes(x=total_cost)) +
+  scale_x_continuous(trans = "sqrt",
+                     breaks=c(300,1200,3000,6000)) +
+  xlab("Total cost (sq root)") +
+  theme(legend.position='none',
+        axis.text = element_text(size = 12,))
+```
+]
+
+.pull-right[
+```{r smallbiz-eda-out, ref.label="smallbiz-eda", echo=FALSE, warning=FALSE, message=FALSE}
+```
+]
+
+---
+
+## Small business ... Model
+
+Linear regression
+
+```{r }
+model <- lm(total_cost ~ vehicle_year, data=auto_data)
+summary(model)
+```
+
+---
+
+## Small business ... Visualise
+
+.pull-left[
+```{r smallbiz-viz, eval=FALSE}
+ggplot(auto_data) +
+  geom_boxplot(aes(y=total_cost,
+                   x=year(transaction_date),
+                   group=year(transaction_date))) +
+  scale_y_continuous(trans = "log") +
+  xlab("Year") +
+  ylab("Total (log scale)") +
+  theme(legend.position='none',
+        axis.text = element_text(size = 12,))
+```
+]
+
+.pull-right[
+```{r smallbiz-viz-out, ref.label="smallbiz-viz", echo=FALSE, warning=FALSE, message=FALSE}
+```
+]
+
+
+---
+
+---
+class: inverse, center, middle
+
+# `r fa(name = "gamepad")` Entertainment: Video Games Data
+
+> The video game industry has grown from niches to mainstream. It makes now more revenue than the international film industry. It has influenced the advance of personal computers with sound cards, graphics cards and 3D graphic accelerators.
+
+***Do Metacritic scores reflect popularity among users?***
+
+---
+
+## Video Games ...
+
+The dataset presented here are the metascores of videogames from 2000 to 2018
+
+- Variables of interest:
+  - metascore: averaged scores from reviews,
+  - userscore: averaged scores from user ratings,
+- Other variables:
+  - Console
+  - Release date
+  - Name of the game
+
+---
+
+## Video Games ... Data
+
+The data is available from
+[`r fa(name = "link")` kaggle](https://www.kaggle.com/datasets/destring/metacritic-reviewed-games-since-2000), will be provided by uDASH staff.
+
+
+```{r message=FALSE}
+games_data <- read_csv("data/video-games.csv")
+
+games_data %>% slice(1:10)
+```
+
+---
+
+## Video Games ... Cleaning and transformation
+
+Transform userscore from character to numeric, transform date from character to date, group consoles:
+
+```{r}
+games_data <-
+  games_data %>%
+  filter(!userscore %in% "tbd") %>%
+  mutate(userscore=as.numeric(userscore),
+        newdate=mdy(date),
+        manufacturer=case_when(
+          console %in% c('VITA','PSP','PS','PS2','PS3','PS4') ~ "SONY",
+          console %in% c('X360','XBOX','XONE') ~ "MICROSOFT",
+          console %in% c('3DS','DS','GBA','Switch','WII','WIIU','GC','N64') ~ "NINTENDO",
+          console %in% c('DC') ~ "SEGA",
+          TRUE ~ console
+        ))
+```
+
+---
+
+## Video Games ...  Explore
+
+Boxplots of variables
+
+
+.pull-left[
+```{r game-eda, eval=FALSE}
+ggplot(games_data) +
+  geom_boxplot(aes(y=metascore,
+                   x=manufacturer,
+                   fill=manufacturer)) +
+  xlab("Manufacturer") +
+  ylab("Metascore") +
+  theme(legend.position='none',
+        axis.text = element_text(size = 12,))
+```
+]
+
+.pull-right[
+```{r game-eda-out, ref.label="game-eda", echo=FALSE, warning=FALSE, message=FALSE}
+```
+]
+
+---
+
+## Video Games ... Model
+
+Multiple linear regression
+
+```{r }
+model <- lm(userscore ~ metascore + manufacturer, data=games_data)
+summary(model)
+```
+
+---
+
+## Video Games ... Visualise
+
+
+.pull-left[
+```{r game-viz, eval=FALSE}
+ggplot(games_data) +
+  geom_point(aes(x=metascore,
+                y=userscore,
+                pch=manufacturer)) +
+  xlab("Metascore") +
+  ylab("Userscore") +
+  theme(legend.position='none')
+```
+]
+
+.pull-right[
+```{r game-viz-out, ref.label="game-viz", echo=FALSE, warning=FALSE, message=FALSE}
+```
+]
+
+
+---
+
+---
+
+class: inverse, center, middle
+
+# `r fa(name = "arrow-trend-up")` Economics: Big economic data
+
+> FRED-MD ("Federal Reserve Economic Data Monthly Database") is a publicly available dataset. Originally designed for the analysis of ***big economic data***, the dataset contains more than one hundred features.
+
+***What drives economic cycles?***
+
+---
+
+## Big economic data ...
+
+- Variable of interest: choose any from
+  - stock market returns,
+  - unemployment rate,
+  - inflation rate, etc.
+- Other variables:
+  - financial indices
+  - housing,
+  - money and credtis, etc
+
+Start with a small subset of variables, and add more if you like
+
+---
+
+## Big economic data ... Data
+
+Data available from the [`r fa(name = "link")` FRED homepage](https://research.stlouisfed.org/econ/mccracken/fred-databases/)
+
+You can use a function provided by uDASH staff to get the data you need.
+
+```{r}
+download_data <- function() {
+
+  # Load FRED-MD
+  data <- read_csv('https://files.stlouisfed.org/files/htdocs/fred-md/monthly/current.csv') %>%
+    rename(date = sasdate)
+
+  # Remove any excess rows
+  data <- data %>%
+    slice(- 1) %>%
+    slice(- (n():(n() - 2)))
+
+  # Format the date
+  data <- data %>%
+      mutate(date = yearmonth(date))
+}
+```
+
+```{r include=FALSE}
+dataset.file <- "data/economic-data.rda"
+if (file.exists(dataset.file)) {
+  load(dataset.file)
+} else {
+  eco_data <- download_data()
+  save(file=dataset.file,eco_data)
+}
+```
+
+---
+
+## Big economic data ... Cleaning and transformation
+
+Select a subset of features, exclude outliers
+
+```{r}
+  eco_data <- eco_data %>%
+    transmute(
+      Date = date,
+      IndustrialProduction = INDPRO,
+      UnemploymentRate = UNRATE,
+      HousingStarts = HOUSTS,
+      FedFundsRate = FEDFUNDS,
+      StockMarket = `S&P 500`,
+      ConsumerPriceIndex = `CPIAUCSL`,
+      PersonalIncome = RPI,
+      UnemploymentClaims = CLAIMSx
+      )
+```
+
+---
+
+## Big economic data ... Explore
+
+Univariate statistics, time series
+
+.pull-left[
+```{r eco-eda, eval=FALSE}
+ggplot(eco_data,
+       aes(Date, UnemploymentRate)) +
+  geom_point() +
+  theme(axis.text = element_text(size = 12,))
+```
+]
+
+.pull-right[
+```{r eco-eda-out, ref.label="eco-eda", echo=FALSE, warning=FALSE, message=FALSE}
+```
+]
+
+
+---
+
+## Big economic data ... Model
+
+Make data _stationary_ (more suitable for regression), apply multiple linear regression, select best explanatory variables
+
+```{r}
+eco_data_transformed <- eco_data %>%
+  mutate(
+    IndustrialProduction = difference(log(IndustrialProduction), diff = 1),
+    UnemploymentRate = difference(UnemploymentRate, diff = 1),
+    HousingStarts = log(HousingStarts),
+    FedFundsRate = difference(FedFundsRate, diff = 1),
+    StockMarket = difference(log(StockMarket), diff = 1),
+    ConsumerPriceIndex = difference(log(ConsumerPriceIndex), diff = 2),
+    PersonalIncome = difference(log(PersonalIncome), diff = 1),
+    UnemploymentClaims = difference(log(UnemploymentClaims), diff = 1)
+    )
+model <- lm(UnemploymentRate ~ ConsumerPriceIndex + IndustrialProduction + PersonalIncome
+          + HousingStarts, eco_data_transformed)
+```
+
+---
+
+## Big economic data ... Visualise
+
+Combine scatterplot and regression lines
+
+.pull-left[
+```{r eco-viz, eval=FALSE}
+ggplot(data=eco_data_transformed,
+       aes(y=UnemploymentRate,
+           x=IndustrialProduction,
+           size=ConsumerPriceIndex)) +
+  geom_point() +
+  geom_smooth(method = 'loess') +
+  theme(legend.position='none')
+```
+]
+
+.pull-right[
+```{r eco-viz-out, ref.label="eco-viz", echo=FALSE, warning=FALSE,message=FALSE}
+```
+]
+
+
+---
+
+
+---
+
+class: inverse, center, middle
+
+# `r fa(name = "cloud-sun-rain")` Climate: Weather & Air Quality in Schools
+
+> Good air quality in Sydney was something that many of us took for granted until the Black Summer Bushfires in 2019-2020. From serious health effects to general inconvenience, it was suddenly hard to ignore just how important the air we breathe truly is. However, fires aren’t the only phenomenon that can impact our air quality: urbanisation, pollution, and weather events can all influence our health and wellbeing.
+
+***Can we predict air quality at UNSW using information about the weather?***
+
+---
+
+## Weather & Air Quality ...
+
+This dataset contains 115 different variables documenting local weather and air quality measured at 12 different sites around Sydney.
+
+- Weather-related variables:
+  - temperature `t`, relative humidity `rh`,
+  - air pressure `p`, rainfall `rain`,
+  - wind direction `wd`, and wind speed `ws`
+
+- Air-quality related variables:
+  - concentrations of nitrogen dioxide `no2`, sulphur dioxide `so2`,
+  - carbon monoxide `co`, ozone `o3`,
+  - particulate matter <2.5μm `pm25`, and <10μm `pm10`.
+
+Since measurements are taken every 20 minutes, we have 43771 data points!
+
+---
+
+## Weather & Air Quality ... Data
+
+Detailed time-series weather and air-quality data collected at Sydney schools are available for download via [TERN](https://www.tern.org.au/news-swaq-data/), but a cleaned version will be provided by uDASH staff.
+
+
+```{r message=FALSE}
+# reading in data
+airqual <- read_csv("data/air-quality.csv") %>%
+  # nice names
+  clean_names()
+
+# preview
+airqual %>%
+  head(3)
+```
+
+---
+
+## Weather & Air Quality ... Cleaning and transformation
+
+Fix dates, reshape table (from wide to long format), filter missing data...
+
+```{r}
+airqual <- airqual %>%
+  # Sydney (AEST) is UTC +10
+  mutate(time_local = time + hours(10))
+
+# changing column structure of data
+airqual_wide <- airqual %>%
+  # now that we have local time don't need utc
+  select(-time) %>%
+  pivot_longer(-time_local) %>%
+  mutate(var_type = as.factor(str_sub(name, start = 6)),
+         location = as.factor(str_sub(name, end = 4))) %>%
+  select(-name) %>%
+  # wider back to the format we want
+  pivot_wider(names_from = var_type, values_from = value)
+```
+
+
+---
+
+## Weather & Air Quality ...  Explore
+
+```{r, echo=FALSE}
+school_with_airqual_measurements <- airqual_wide %>%
+  group_by(location) %>%
+  select(pm10) %>% # using pm10 to check if have any air quality measurements
+  summarise(num_measurements = sum(!is.na(pm10))) %>%
+  ungroup() %>%
+  # select only school with non-zero amount of measurements
+  filter(num_measurements > 0) %>%
+  # get list of schools
+  pull(location)
+
+# only want data from schools in the list we created
+airqual_clean <- airqual_wide %>%
+  filter(location %in% school_with_airqual_measurements)
+
+# restricting to get UNSW data
+unsw_data <- airqual_clean %>%
+  # only unsw
+  filter(location == "unsw") %>%
+  # Jan 2021
+  filter(time_local > "2021-01-01" & time_local < "2021-02-01") %>%
+  # need no2 measurements
+  drop_na(no2) %>%
+  # only weather variables, time, and no2
+  select(time_local, no2, t, rh, p, rain, wd, ws) %>%
+  # get hour of the day
+  mutate(hour = hour(time_local)) %>%
+  # get day of the week
+  mutate(dow = as.factor(wday(time_local)))
+```
+
+Plotting relationship between $NO_2$ and key variables for one site (UNSW):
+
+.pull-left[
+```{r airq-eda, eval=FALSE}
+unsw_data %>%
+  select(hour, t, rh, no2) %>%
+  pivot_longer(-no2) %>%
+  ggplot(aes(x = value, y = no2)) +
+  geom_point() +
+  facet_wrap(~ name, scales = "free_x", nrow = 2) +
+  xlab("") +
+  theme(axis.text.y = element_blank())
+```
+]
+
+.pull-right[
+```{r airq-eda-out, ref.label="airq-eda", echo=FALSE, warning=FALSE, message=FALSE}
+```
+]
+
+---
+
+## Weather & Air Quality ... Model
+
+Multiple linear regression, for example between temperature, relative humidity, and NO<sub>2</sub> concentrations.
+
+```{r }
+# fitting multiple linear regression
+model <- lm( no2 ~ t + rh + dow,
+             data = unsw_data)
+summary(model)
+```
+
+---
+
+
+## Weather & Air Quality ... Visualise
+
+Combining predictions with data to plot the results of the model
+
+
+.pull-left[
+```{r airq-viz, eval=FALSE}
+cbind(unsw_data, pred = predict(model, newdata = unsw_data)) %>%
+  ggplot(aes(x = no2, y = pred)) +
+  geom_point() +
+  geom_abline(slope = 1,
+              intercept = 0,
+              color = "blue") +
+  xlab("Observed") +
+  ylab("Predicted")
+```
+]
+
+.pull-right[
+```{r airq-viz-out, ref.label="airq-viz", echo=FALSE, warning=FALSE, message=FALSE}
+```
+]
+
+---
+---
+
+# Thanks!
+
+[`r fa(name = "twitter")` @uDASH_UNSW](https://twitter.com/uDASH_UNSW)
+
+[`r fa(name = "house")` //www.unsw.edu.au/research/udash](https://www.unsw.edu.au/research/udash)
+
+[`r fa(name = "paper-plane")` uDASH@unsw.edu.au](mailto:uDASH@unsw.edu.au )

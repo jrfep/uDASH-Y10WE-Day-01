@@ -1,0 +1,403 @@
+---
+title: "Intro to R and Rstudio"
+institute: "UNSW Data Science Hub"
+date: "21-11-2022"
+output:
+  xaringan::moon_reader:
+    css: [xaringan-themer.css, "css/footer.css"]
+    lib_dir: libs
+    nature:
+      countdown: 60000
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: true
+editor_options: 
+  chunk_output_type: console
+---
+layout: true
+
+# R and RStudio
+
+<div class="my-footer"><span>UNSW Data Science Hub / <a href='https://www.unsw.edu.au/research/udash'>uDASH</a></span></div>
+
+<!-- this adds the link footer to all slides, depends on my-footer class in css-->
+
+```{r xaringan-logo, echo=FALSE}
+xaringanExtra::use_logo(
+  image_url = "images/uDASH-logo.jpg",
+  position = xaringanExtra::css_position(top = "1em", right = "1em")
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+uDASH_colors <- c(blue1="#CEDAD5", blue2="#16938F", blackish="#0E0F0F", green1="#79C45E", green2="#68A170", brownish="#949494", bluish="#769CBE", greenish="#4E722F")
+style_duo_accent(
+  primary_color = uDASH_colors[5], secondary_color = uDASH_colors[1],
+  header_font_google = google_font("Roboto Slab"),
+  text_font_google   = google_font("Roboto", "300", "300i"),
+  code_font_google   = google_font("Roboto Mono"),
+  colors = uDASH_colors
+)
+
+knitr::opts_chunk$set(fig.showtext=TRUE,collapse=TRUE)
+
+library(fontawesome)
+```
+
+---
+
+## R 
+
+[`r fa(name = "link")` //www.r-project.org/](https://www.r-project.org/)
+
+- Developed by **R**oss Ihaka and **R**obert Gentleman in 1993
+
+- Maintained by an open community
+
+- ***R*** is one of the most popular ***programming languages*** for statistical computing 
+
+- Strengths: 
+  - graphics, 
+  - data analysis and 
+  - developing statistical software
+
+---
+
+## RStudio (== Posit)
+
+[`r fa(name = "link")` //www.rstudio.com](https://www.rstudio.com/products/rstudio/)
+[`r fa(name = "link")` //posit.co](https://posit.co)
+
+- RStudio is a Integrated Development Environment (IDE) for ***R***
+
+- RStudio is a commercial software (with free and professional plans)
+
+- Includes a console, editor, plotting, workspace management, etc
+
+- ***RStudio*** is now ***Posit***
+
+---
+
+## RStudio Cloud (== Posit Cloud)
+
+[`r fa(name = "link")` //rstudio.cloud/](https://rstudio.cloud/)
+
+
+- Cloud-based solution
+
+- No installation, simple configuration
+
+- Shared workspaces
+
+- Free and professional plans
+
+- ***RStudio Cloud*** is becoming ***Posit Cloud***
+
+---
+layout: false
+
+class: center,inverse,middle
+
+# Overview of RStudio Cloud
+
+---
+
+## Project management with RStudio Cloud
+
+We use _Projects_ and _Workspaces_ to organise our work in RStudio Cloud.
+
+- You can create a `New Project` in your personal Workspace
+
+- Give it a name you can easily remember
+
+- Go to `Tools` > `Project options`
+
+- You can create folders, for example `data`, `scripts`, etc.
+
+- You cab add `R scripts` as files in these folder, 
+
+---
+
+class: center,inverse,middle
+
+# Quick intro to R
+
+---
+
+## Arithmetic
+
+```{r}
+# You can do arithmetic :
+2 + 2 * 3 / 7
+# You can use parenthesis to make your expression clearer:
+(2 + 2) * (3 / 7)
+```
+
+Order of operations from highest to lowest precedence:
+
+- Parentheses: `(`, `)`
+- Exponents: `^` or `**`
+- Multiply: `*`
+- Divide: `/`
+- Add: `+`
+- Subtract: `-`
+
+---
+
+## Functions
+
+R has many built in functions: `function(argument)`
+
+```{r}
+# trigonometry functions
+sin(1)
+# natural logarithm
+log(10) # log10() for base-10
+```
+
+Use help `?` and autocompletion functions in RStudio to learn how to use them. 
+
+(Or seach online!)
+
+---
+
+## Compare values
+
+```{r}
+# equality (note two equals signs, read as "is equal to")
+10 == (5+5)
+# inequality (read as "is not equal to")
+2 != 1
+# less than 
+10 < 5
+# greater than or equal to
+1 >= -9 
+```
+
+
+---
+
+## Variable assignment
+
+Use `<-` (or `=`) to store a value in a variable
+
+```{r}
+# You can assign values to named variables:
+a <- 2+2
+b <- 3/7
+# and use variables in operations:
+a * b
+# and combine variables and functions:
+exp(a) + log(b)
+```
+
+Check values of variables in the `Environment` tab in RStudio.
+
+---
+
+## Vectorization
+
+A vector in R is a set of values in a certain order of the same data type
+
+```{r}
+# A variable can be a vector:
+a <- c( 2, 2, 3.2 , 1/7)
+# and this is convenient to make stuff like this:
+a * 2
+# but you can also calculate values like this:
+mean(a)
+```
+
+---
+
+## Managing your environment
+
+```{r}
+# list all variables in your environment
+ls()
+# remove one variable from your environment
+rm(a)
+# remove everything from your environment
+rm(list = ls())
+```
+
+---
+
+## R packages
+
+You can use functions like `installed.packages()` and `install.packages("packagename")` to manage your packages in R.
+
+But check also the `packages` tab in Rstudio for shortcuts.
+
+We will install some packages for use during this week
+---
+
+class: center,inverse,middle
+
+# Into the _tidyverse_
+
+---
+
+## Tidyverse
+
+[`r fa(name = "link")` //www.tidyverse.org](https://www.tidyverse.org/)
+
+- A collection of R packages designed for data science
+- All packages share:
+  - an underlying design philosophy, 
+  - grammar, and 
+  - data structures
+
+Run this once to install:
+```{r eval=FALSE}
+install.packages("tidyverse")
+```
+
+---
+
+## Load library
+
+Run this at the start of the session when you need to use tidyverse functions:
+
+```{r}
+library(tidyverse)
+```
+
+---
+
+## tibble
+
+Basic data structures in R are data frames (`data.frame`), and tibbles are data frames with some tweaks for integration with tidyverse functions
+
+```{r}
+# Each vector is a column in the tibble
+
+my_data <- tibble(
+x = c(0,2,4,6),    
+y = c('a','b','d', 'amazing'), 
+z = x^2) 
+
+my_data 
+```
+
+
+---
+
+## One example dataset
+
+Most packages in R include example datasets, you can load this data with the function `data`.
+
+The dataset `population` includes information on global populations from the  World Health Organization. The data is a tibble with more than 4000 rows and three variables:
+
+```{r}
+data(population)
+```
+
+---
+
+## pipe
+
+Pipes `%>%` are used in tidyverse to express a sequence of multiple operations, for example:
+
+```{r}
+x <- c(1,10,100)
+y <- mean(x)
+log(y)
+```
+
+Can be rewritten as:
+```{r}
+x <- c(1,10,100)
+x %>% mean() %>% log()
+```
+
+---
+
+## filter, slice...
+
+You can `filter` or `slice` rows of your data
+
+```{r}
+filter(population, country == "Australia", year>2010)
+```
+
+```{r}
+slice(population, c(1,100,1000))
+```
+
+
+---
+
+## ... select 
+
+Or select columns:
+
+```{r}
+select(population, country,year)
+```
+
+---
+
+## filter, slice and select with pipes
+
+Often you need to filter, slice and select your data:
+
+```{r}
+population %>% 
+  filter(country == "Australia") %>% 
+  slice(1) %>% 
+  select(year,population)
+```
+
+---
+
+## Graphics with ggplot2
+
+`ggplot2` allow us to create graphics adding layers of information:
+
+```{r ggplot-example, eval=FALSE}
+# filter the data
+ACA_population <- population %>% 
+  filter(country %in% c('Australia','Canada'))
+
+# base layer: the data
+ggplot(data=ACA_population) +
+  # first layer: add points using these aesthetics 
+  geom_point(aes(x=year, y=population, colour=country)) 
+ # second layer: add smoth using these aesthetics 
+  geom_smooth(aes(x=year, y=population, colour=country), method='lm') 
+```
+
+---
+
+
+```{r ggplot-example-out, ref.label="ggplot-example", echo=FALSE, warning=FALSE, message=FALSE}
+```
+
+
+
+---
+
+# Sources
+
+Content for this presentation is based on following sources:
+
+- Naupaka Zimmerman, Greg Wilson, Raniere Silva, Scott Ritchie, François Michonneau, Jeffrey Oliver, … Yuka Takemon. (2019, July). swcarpentry/r-novice-gapminder: Software Carpentry: R for Reproducible Scientific Analysis, June 2019 (Version v2019.06.1). Zenodo. http://doi.org/10.5281/zenodo.3265164
+
+- John Blischak, Daniel Chen, Harriet Dashnow, and Denis Haine (eds):
+"Software Carpentry: Programming with R."  Version 2016.06, June 2016,
+https://github.com/swcarpentry/r-novice-inflammation,
+10.5281/zenodo.57541. 
+
+- Hadley Wickham and Garrett Grolemund: "R for Data Science" (1027), https://r4ds.had.co.nz/ 
+
+
+---
+# Thanks!
+
+[`r fa(name = "twitter")` @uDASH_UNSW](https://twitter.com/uDASH_UNSW)
+
+[`r fa(name = "house")` //www.unsw.edu.au/research/udash](https://www.unsw.edu.au/research/udash)
+
+[`r fa(name = "paper-plane")` uDASH@unsw.edu.au](mailto:uDASH@unsw.edu.au )

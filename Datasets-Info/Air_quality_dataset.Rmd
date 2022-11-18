@@ -1,0 +1,285 @@
+---
+title: "Choose your project"
+institute: "UNSW Data Science Hub"
+date: "21-11-2022"
+output:
+  xaringan::moon_reader:
+    css: [xaringan-themer.css, "css/footer.css"]
+    lib_dir: libs
+    nature:
+      countdown: 60000
+      highlightStyle: solarized-dark
+      highlightLines: true
+      countIncrementalSlides: true
+editor_options: 
+  chunk_output_type: console
+---
+layout: true
+
+<div class="my-footer"><span>UNSW Data Science Hub / <a href='https://www.unsw.edu.au/research/udash'>uDASH</a></span></div>
+
+<!-- this adds the link footer to all slides, depends on my-footer class in css-->
+
+```{r xaringan-logo, echo=FALSE}
+xaringanExtra::use_logo(
+  image_url = "images/uDASH-logo.jpg",
+  position = xaringanExtra::css_position(top = "1em", right = "1em")
+)
+```
+
+```{r setup, include=FALSE}
+# https://www.garrickadenbuie.com/blog/decouple-code-and-output-in-xaringan-slides/
+knitr::opts_chunk$set(fig.showtext=TRUE,fig.dim=c(4.8, 4.5), fig.retina=2, out.width="100%")
+```
+
+```{r packages, include=FALSE}
+library(fontawesome)
+require(dplyr)
+require(ggplot2)
+require(readr)
+require(lubridate)
+require(janitor)
+library(tidyr)
+library(stringr)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_solarized_light(
+#style_mono_accent(
+#  base_color = "#1c5253",
+  header_font_google = google_font("Roboto Slab"),
+  text_font_google   = google_font("Roboto", "300", "300i"),
+  code_font_google   = google_font("Roboto Mono"),
+  code_font_size = '0.7rem'
+)
+# for ggplot2
+theme_set(theme_xaringan())
+```
+
+
+---
+
+class: inverse, center, middle
+
+# Climate: Weather & Air Quality in Schools
+
+> Good air quality in Sydney was something that many of us took for granted until the Black Summer Bushfires in 2019-2020. From serious health effects to general inconvenience, it was suddenly hard to ignore just how important the air we breathe truly is. However, fires aren’t the only phenomenon that can impact our air quality: urbanisation, pollution, and weather events can all influence our health and wellbeing. 
+
+***Can we predict air quality at UNSW using information about the weather?***
+
+---
+
+## Weather & Air Quality ...
+
+This dataset contains 115 different variables documenting local weather and air quality measured at 12 different sites around Sydney.
+We break these variables up into
+
+- Weather-related variables: temperature `t`, relative humidity `rh`, air pressure `p`, rainfall `rain`, wind direction `wd`, and wind speed `ws`, and
+- Air-quality related variables: concentrations of nitrogen dioxide `no2`, sulphur dioxide `so2`, carbon monoxide `co`, ozone `o3`, particulate matter <2.5μm `pm25`, and particulate matter <10μm `pm10`.
+
+We also have the time and date of each measurement.
+Since measurements are taken every 20 minutes, we have 43771 data points!
+
+---
+
+## Weather & Air Quality ... Data
+
+The data is available from [TERN](https://www.kaggle.com/datasets/destring/metacritic-reviewed-games-since-2000), and will be provided by uDASH staff.
+
+
+```{r message=FALSE}
+# reading in data
+airqual <- read_csv("data/air-quality.csv") %>%
+  # nice names
+  clean_names()
+
+# preview 
+airqual %>% 
+  head(3)
+```
+
+---
+
+## Weather & Air Quality ... Cleaning and transformation
+
+We're lucky that the data has already been cleaned.
+However, we do notice that the times given are in UTC rather than local time.
+Fortunately (if we ignore daylight savings) this is easy to fix!
+
+```{r}
+airqual <- airqual %>%
+  # Sydney (AEST) is UTC +10 
+  mutate(time_local = time + hours(10))
+```
+
+---
+
+## Weather & Air Quality ... Cleaning and transformation
+
+Also, the data is in a bit of an inconvenient format: we have 116 columns where each column corresponds to a specific school and variable combination.
+It would be easier for us if there was simply a column for each variable and a column saying when and where the measurement was taken.
+Fortunately we can fix that!
+
+```{r}
+# changing column structure of data
+airqual_wide <- airqual %>% 
+  # now that we have local time don't need utc
+  select(-time) %>%
+  pivot_longer(-time_local) %>%
+  mutate(var_type = as.factor(str_sub(name, start = 6)),
+         location = as.factor(str_sub(name, end = 4))) %>%
+  select(-name) %>%
+  # wider back to the format we want
+  pivot_wider(names_from = var_type, values_from = value)
+```
+
+---
+
+## Weather & Air Quality ... Cleaning and transformation
+
+Lastly, we ignore the schools where there is no air quality data. 
+
+```{r, message=FALSE}
+school_with_airqual_measurements <- airqual_wide %>%
+  group_by(location) %>% 
+  select(pm10) %>% # using pm10 to check if have any air quality measurements 
+  summarise(num_measurements = sum(!is.na(pm10))) %>%
+  ungroup() %>%
+  # select only school with non-zero amount of measurements
+  filter(num_measurements > 0) %>%
+  # get list of schools
+  pull(location)
+
+# only want data from schools in the list we created
+airqual_clean <- airqual_wide %>% 
+  filter(location %in% school_with_airqual_measurements)
+```
+
+---
+
+## Weather & Air Quality ...  Explore
+
+There are so many different questions we could explore with this data, but here we are going to examine nitrogen dioxide (NO<sub>2</sub>) concentrations around UNSW in January 2021.
+NO<sub>2</sub> causes respiratory problems and reacts with other compounds in the air to form more pollutants including PM2.5, PM10, and ozone (O<sub>3</sub>).
+As NO<sub>2</sub> is often related to burning fossil fuels, it's concentration is often related to cars and traffic.
+Hence, we're going to pay specific attention to the day of the week and the time of the day.
+
+
+```{r}
+# restricting to get UNSW data
+unsw_data <- airqual_clean %>% 
+  # only unsw
+  filter(location == "unsw") %>%
+  # Jan 2021
+  filter(time_local > "2021-01-01" & time_local < "2021-02-01") %>%
+  # need no2 measurements
+  drop_na(no2) %>%
+  # only weather variables, time, and no2
+  select(time_local, no2, t, rh, p, rain, wd, ws) %>%
+  # get hour of the day
+  mutate(hour = hour(time_local)) %>%
+  # get day of the week
+  mutate(dow = as.factor(wday(time_local)))
+```
+
+---
+
+## Weather & Air Quality ...  Explore
+
+.pull-left[
+```{r game-eda1, eval=FALSE}
+# plotting relationship between no2 and key variables
+unsw_data %>%
+  select(hour, t, rh, no2) %>%
+  pivot_longer(-no2) %>%
+  ggplot(aes(x = value, y = no2)) + 
+  geom_point() + 
+  facet_wrap(~ name, scales = "free_x", nrow = 2) +
+  xlab("") + 
+  theme(axis.text.y = element_blank())
+```
+]
+
+.pull-right[
+```{r game-eda-out1, ref.label="game-eda1", echo=FALSE, warning=FALSE, message=FALSE}
+```
+]
+
+---
+
+## Weather & Air Quality ...  Explore
+
+.pull-left[
+```{r game-eda2, eval=FALSE}
+# now looking at the categorical variable: day of the week
+unsw_data %>%
+  ggplot(aes(x = dow, y = no2)) + 
+  geom_boxplot()
+```
+]
+
+.pull-right[
+```{r game-eda-out2, ref.label="game-eda2", echo=FALSE, warning=FALSE, message=FALSE}
+```
+]
+
+---
+
+## Weather & Air Quality ... Model
+
+We noticed a strong relationship between temperature, relative humidity, and NO<sub>2</sub> concentrations. There is also some sort of cyclical relationship with the time of the day, which we can also model within multiple linear regression using $sin$ and $cos$ terms. 
+
+```{r }
+# fitting multiple linear regression
+model <- lm( no2 ~ sin(hour*pi/12) + cos(hour*pi/12) + t + rh + dow, 
+             data = unsw_data)
+```
+
+---
+
+## Weather & Air Quality ... Model
+
+```{r }
+# examining fitted model
+model %>%
+  summary()
+```
+
+---
+
+## Weather & Air Quality ... Evaluation
+
+We can compare predictions from our model to the observed results. 
+If our model was perfect, all the points should lie on the blue line.
+We can see our model particularly struggles to predict the days were there are very low NO<sub>2</sub> concentrations - can you suggest why? 
+Also our model predicts some negative concentrations - we can definitely keep making this model better!
+
+.pull-left[
+```{r game-viz, eval=FALSE}
+# combining predictions with data
+cbind(unsw_data, pred = predict(model, newdata = unsw_data)) %>%
+  ggplot(aes(x = no2, y = pred)) + 
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "blue")
+```
+]
+
+.pull-right[
+```{r game-viz-out, ref.label="game-viz", echo=FALSE, warning=FALSE, message=FALSE}
+```
+]
+
+
+
+---
+
+
+# Thanks!
+
+[`r fa(name = "twitter")` @uDASH_UNSW](https://twitter.com/uDASH_UNSW)
+
+[`r fa(name = "link")` //www.unsw.edu.au/research/udash](https://www.unsw.edu.au/research/udash)
+
+[`r fa(name = "paper-plane")` uDASH@unsw.edu.au](mailto:uDASH@unsw.edu.au )
+

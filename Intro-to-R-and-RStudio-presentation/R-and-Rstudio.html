@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Intro to R and Rstudio</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.17/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="css/footer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Intro to R and Rstudio
+]
+.institute[
+### UNSW Data Science Hub
+]
+.date[
+### 21-11-2022
+]
+
+---
+
+layout: true
+
+# R and RStudio
+
+&lt;div class="my-footer"&gt;&lt;span&gt;UNSW Data Science Hub / &lt;a href='https://www.unsw.edu.au/research/udash'&gt;uDASH&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;
+
+&lt;!-- this adds the link footer to all slides, depends on my-footer class in css--&gt;
+
+<div>
+<style type="text/css">.xaringan-extra-logo {
+width: 110px;
+height: 128px;
+z-index: 0;
+background-image: url(images/uDASH-logo.jpg);
+background-size: contain;
+background-repeat: no-repeat;
+position: absolute;
+top:1em;right:1em;
+}
+</style>
+<script>(function () {
+  let tries = 0
+  function addLogo () {
+    if (typeof slideshow === 'undefined') {
+      tries += 1
+      if (tries < 10) {
+        setTimeout(addLogo, 100)
+      }
+    } else {
+      document.querySelectorAll('.remark-slide-content:not(.title-slide):not(.inverse):not(.hide_logo)')
+        .forEach(function (slide) {
+          const logo = document.createElement('div')
+          logo.classList = 'xaringan-extra-logo'
+          logo.href = null
+          slide.appendChild(logo)
+        })
+    }
+  }
+  document.addEventListener('DOMContentLoaded', addLogo)
+})()</script>
+</div>
+
+
+
+---
+
+## R 
+
+[<svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg> //www.r-project.org/](https://www.r-project.org/)
+
+- Developed by **R**oss Ihaka and **R**obert Gentleman in 1993
+
+- Maintained by an open community
+
+- ***R*** is one of the most popular ***programming languages*** for statistical computing 
+
+- Strengths: 
+  - graphics, 
+  - data analysis and 
+  - developing statistical software
+
+---
+
+## RStudio (== Posit)
+
+[<svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg> //www.rstudio.com](https://www.rstudio.com/products/rstudio/)
+[<svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg> //posit.co](https://posit.co)
+
+- RStudio is a Integrated Development Environment (IDE) for ***R***
+
+- RStudio is a commercial software (with free and professional plans)
+
+- Includes a console, editor, plotting, workspace management, etc
+
+- ***RStudio*** is now ***Posit***
+
+---
+
+## RStudio Cloud (== Posit Cloud)
+
+[<svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg> //rstudio.cloud/](https://rstudio.cloud/)
+
+
+- Cloud-based solution
+
+- No installation, simple configuration
+
+- Shared workspaces
+
+- Free and professional plans
+
+- ***RStudio Cloud*** is becoming ***Posit Cloud***
+
+---
+layout: false
+
+class: center,inverse,middle
+
+# Overview of RStudio Cloud
+
+---
+
+## Project management with RStudio Cloud
+
+We use _Projects_ and _Workspaces_ to organise our work in RStudio Cloud.
+
+- You can create a `New Project` in your personal Workspace
+
+- Give it a name you can easily remember
+
+- Go to `Tools` &gt; `Project options`
+
+- You can create folders, for example `data`, `scripts`, etc.
+
+- You cab add `R scripts` as files in these folder, 
+
+---
+
+class: center,inverse,middle
+
+# Quick intro to R
+
+---
+
+## Arithmetic
+
+
+```r
+# You can do arithmetic :
+2 + 2 * 3 / 7
+## [1] 2.857143
+# You can use parenthesis to make your expression clearer:
+(2 + 2) * (3 / 7)
+## [1] 1.714286
+```
+
+Order of operations from highest to lowest precedence:
+
+- Parentheses: `(`, `)`
+- Exponents: `^` or `**`
+- Multiply: `*`
+- Divide: `/`
+- Add: `+`
+- Subtract: `-`
+
+---
+
+## Functions
+
+R has many built in functions: `function(argument)`
+
+
+```r
+# trigonometry functions
+sin(1)
+## [1] 0.841471
+# natural logarithm
+log(10) # log10() for base-10
+## [1] 2.302585
+```
+
+Use help `?` and autocompletion functions in RStudio to learn how to use them. 
+
+(Or seach online!)
+
+---
+
+## Compare values
+
+
+```r
+# equality (note two equals signs, read as "is equal to")
+10 == (5+5)
+## [1] TRUE
+# inequality (read as "is not equal to")
+2 != 1
+## [1] TRUE
+# less than 
+10 &lt; 5
+## [1] FALSE
+# greater than or equal to
+1 &gt;= -9 
+## [1] TRUE
+```
+
+
+---
+
+## Variable assignment
+
+Use `&lt;-` (or `=`) to store a value in a variable
+
+
+```r
+# You can assign values to named variables:
+a &lt;- 2+2
+b &lt;- 3/7
+# and use variables in operations:
+a * b
+## [1] 1.714286
+# and combine variables and functions:
+exp(a) + log(b)
+## [1] 53.75085
+```
+
+Check values of variables in the `Environment` tab in RStudio.
+
+---
+
+## Vectorization
+
+A vector in R is a set of values in a certain order of the same data type
+
+
+```r
+# A variable can be a vector:
+a &lt;- c( 2, 2, 3.2 , 1/7)
+# and this is convenient to make stuff like this:
+a * 2
+## [1] 4.0000000 4.0000000 6.4000000 0.2857143
+# but you can also calculate values like this:
+mean(a)
+## [1] 1.835714
+```
+
+---
+
+## Managing your environment
+
+
+```r
+# list all variables in your environment
+ls()
+## [1] "a"            "b"            "uDASH_colors"
+# remove one variable from your environment
+rm(a)
+# remove everything from your environment
+rm(list = ls())
+```
+
+---
+
+## R packages
+
+You can use functions like `installed.packages()` and `install.packages("packagename")` to manage your packages in R.
+
+But check also the `packages` tab in Rstudio for shortcuts.
+
+We will install some packages for use during this week
+---
+
+class: center,inverse,middle
+
+# Into the _tidyverse_
+
+---
+
+## Tidyverse
+
+[<svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg> //www.tidyverse.org](https://www.tidyverse.org/)
+
+- A collection of R packages designed for data science
+- All packages share:
+  - an underlying design philosophy, 
+  - grammar, and 
+  - data structures
+
+Run this once to install:
+
+```r
+install.packages("tidyverse")
+```
+
+---
+
+## Load library
+
+Run this at the start of the session when you need to use tidyverse functions:
+
+
+```r
+library(tidyverse)
+## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+## ✔ ggplot2 3.4.0      ✔ purrr   0.3.5 
+## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
+## ✔ tidyr   1.2.1      ✔ stringr 1.4.1 
+## ✔ readr   2.1.3      ✔ forcats 0.5.2 
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+```
+
+---
+
+## tibble
+
+Basic data structures in R are data frames (`data.frame`), and tibbles are data frames with some tweaks for integration with tidyverse functions
+
+
+```r
+# Each vector is a column in the tibble
+
+my_data &lt;- tibble(
+x = c(0,2,4,6),    
+y = c('a','b','d', 'amazing'), 
+z = x^2) 
+
+my_data 
+## # A tibble: 4 × 3
+##       x y           z
+##   &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt;
+## 1     0 a           0
+## 2     2 b           4
+## 3     4 d          16
+## 4     6 amazing    36
+```
+
+
+---
+
+## One example dataset
+
+Most packages in R include example datasets, you can load this data with the function `data`.
+
+The dataset `population` includes information on global populations from the  World Health Organization. The data is a tibble with more than 4000 rows and three variables:
+
+
+```r
+data(population)
+```
+
+---
+
+## pipe
+
+Pipes `%&gt;%` are used in tidyverse to express a sequence of multiple operations, for example:
+
+
+```r
+x &lt;- c(1,10,100)
+y &lt;- mean(x)
+log(y)
+## [1] 3.610918
+```
+
+Can be rewritten as:
+
+```r
+x &lt;- c(1,10,100)
+x %&gt;% mean() %&gt;% log()
+## [1] 3.610918
+```
+
+---
+
+## filter, slice...
+
+You can `filter` or `slice` rows of your data
+
+
+```r
+filter(population, country == "Australia", year&gt;2010)
+## # A tibble: 3 × 3
+##   country    year population
+##   &lt;chr&gt;     &lt;int&gt;      &lt;int&gt;
+## 1 Australia  2011   22740536
+## 2 Australia  2012   23050471
+## 3 Australia  2013   23342553
+```
+
+
+```r
+slice(population, c(1,100,1000))
+## # A tibble: 3 × 3
+##   country      year population
+##   &lt;chr&gt;       &lt;int&gt;      &lt;int&gt;
+## 1 Afghanistan  1995   17586073
+## 2 Angola       1999   13510616
+## 3 Cyprus       1998     908040
+```
+
+
+---
+
+## ... select 
+
+Or select columns:
+
+
+```r
+select(population, country,year)
+## # A tibble: 4,060 × 2
+##    country      year
+##    &lt;chr&gt;       &lt;int&gt;
+##  1 Afghanistan  1995
+##  2 Afghanistan  1996
+##  3 Afghanistan  1997
+##  4 Afghanistan  1998
+##  5 Afghanistan  1999
+##  6 Afghanistan  2000
+##  7 Afghanistan  2001
+##  8 Afghanistan  2002
+##  9 Afghanistan  2003
+## 10 Afghanistan  2004
+## # … with 4,050 more rows
+```
+
+---
+
+## filter, slice and select with pipes
+
+Often you need to filter, slice and select your data:
+
+
+```r
+population %&gt;% 
+  filter(country == "Australia") %&gt;% 
+  slice(1) %&gt;% 
+  select(year,population)
+## # A tibble: 1 × 2
+##    year population
+##   &lt;int&gt;      &lt;int&gt;
+## 1  1995   18124234
+```
+
+---
+
+## Graphics with ggplot2
+
+`ggplot2` allow us to create graphics adding layers of information:
+
+
+```r
+# filter the data
+ACA_population &lt;- population %&gt;% 
+  filter(country %in% c('Australia','Canada'))
+
+# base layer: the data
+ggplot(data=ACA_population) +
+  # first layer: add points using these aesthetics 
+  geom_point(aes(x=year, y=population, colour=country)) 
+ # second layer: add smoth using these aesthetics 
+  geom_smooth(aes(x=year, y=population, colour=country), method='lm') 
+```
+
+---
+
+
+![](R-and-Rstudio_files/figure-html/ggplot-example-out-1.png)&lt;!-- --&gt;
+
+```
+## mapping: x = ~year, y = ~population, colour = ~country 
+## geom_smooth: na.rm = FALSE, orientation = NA, se = TRUE
+## stat_smooth: na.rm = FALSE, orientation = NA, se = TRUE, method = lm
+## position_identity
+```
+
+
+
+---
+
+# Sources
+
+Content for this presentation is based on following sources:
+
+- Naupaka Zimmerman, Greg Wilson, Raniere Silva, Scott Ritchie, François Michonneau, Jeffrey Oliver, … Yuka Takemon. (2019, July). swcarpentry/r-novice-gapminder: Software Carpentry: R for Reproducible Scientific Analysis, June 2019 (Version v2019.06.1). Zenodo. http://doi.org/10.5281/zenodo.3265164
+
+- John Blischak, Daniel Chen, Harriet Dashnow, and Denis Haine (eds):
+"Software Carpentry: Programming with R."  Version 2016.06, June 2016,
+https://github.com/swcarpentry/r-novice-inflammation,
+10.5281/zenodo.57541. 
+
+- Hadley Wickham and Garrett Grolemund: "R for Data Science" (1027), https://r4ds.had.co.nz/ 
+
+
+---
+# Thanks!
+
+[<svg aria-hidden="true" role="img" viewBox="0 0 512 512" style="height:1em;width:1em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg> @uDASH_UNSW](https://twitter.com/uDASH_UNSW)
+
+[<svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg> //www.unsw.edu.au/research/udash](https://www.unsw.edu.au/research/udash)
+
+[<svg aria-hidden="true" role="img" viewBox="0 0 512 512" style="height:1em;width:1em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M501.6 4.186c-7.594-5.156-17.41-5.594-25.44-1.063L12.12 267.1C4.184 271.7-.5037 280.3 .0431 289.4c.5469 9.125 6.234 17.16 14.66 20.69l153.3 64.38v113.5c0 8.781 4.797 16.84 12.5 21.06C184.1 511 188 512 191.1 512c4.516 0 9.038-1.281 12.99-3.812l111.2-71.46l98.56 41.4c2.984 1.25 6.141 1.875 9.297 1.875c4.078 0 8.141-1.031 11.78-3.094c6.453-3.625 10.88-10.06 11.95-17.38l64-432C513.1 18.44 509.1 9.373 501.6 4.186zM369.3 119.2l-187.1 208.9L78.23 284.7L369.3 119.2zM215.1 444v-49.36l46.45 19.51L215.1 444zM404.8 421.9l-176.6-74.19l224.6-249.5L404.8 421.9z"/></svg> uDASH@unsw.edu.au](mailto:uDASH@unsw.edu.au )
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+(function(time) {
+  var d2 = function(number) {
+    return ('0' + number).slice(-2); // left-pad 0 to minutes/seconds
+  },
+
+  time_format = function(total) {
+    var secs = Math.abs(total) / 1000;
+    var h = Math.floor(secs / 3600);
+    var m = Math.floor(secs % 3600 / 60);
+    var s = Math.round(secs % 60);
+    var res = d2(m) + ':' + d2(s);
+    if (h > 0) res = h + ':' + res;
+    return res;  // [hh:]mm:ss
+  },
+
+  slide_number_div = function(i) {
+    return document.getElementsByClassName('remark-slide-number').item(i);
+  },
+
+  current_page_number = function(i) {
+    return slide_number_div(i).firstChild.textContent;  // text "i / N"
+  };
+
+  var timer = document.createElement('span'); timer.id = 'slide-time-left';
+  var time_left = time, k = slideshow.getCurrentSlideIndex(),
+      last_page_number = current_page_number(k);
+
+  setInterval(function() {
+    time_left = time_left - 1000;
+    timer.innerHTML = ' ' + time_format(time_left);
+    if (time_left < 0) timer.style.color = 'red';
+  }, 1000);
+
+  slide_number_div(k).appendChild(timer);
+
+  slideshow.on('showSlide', function(slide) {
+    var i = slide.getSlideIndex(), n = current_page_number(i);
+    // reset timer when a new slide is shown and the page number is changed
+    if (last_page_number !== n) {
+      time_left = time; last_page_number = n;
+      timer.innerHTML = ' ' + time_format(time); timer.style.color = null;
+    }
+    slide_number_div(i).appendChild(timer);
+  });
+})(60000);
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

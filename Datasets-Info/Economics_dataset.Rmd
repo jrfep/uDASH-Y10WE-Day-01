@@ -1,0 +1,200 @@
+---
+title: "Choose your project"
+institute: "UNSW Data Science Hub"
+date: "21-11-2022"
+output:
+  xaringan::moon_reader:
+    css: [xaringan-themer.css, "css/footer.css"]
+    lib_dir: libs
+    nature:
+      countdown: 60000
+      highlightStyle: solarized-dark
+      highlightLines: true
+      countIncrementalSlides: true
+editor_options: 
+  chunk_output_type: console
+---
+layout: true
+
+<div class="my-footer"><span>UNSW Data Science Hub / <a href='https://www.unsw.edu.au/research/udash'>uDASH</a></span></div>
+
+<!-- this adds the link footer to all slides, depends on my-footer class in css-->
+
+```{r xaringan-logo, echo=FALSE}
+xaringanExtra::use_logo(
+  image_url = "images/uDASH-logo.jpg",
+  position = xaringanExtra::css_position(top = "1em", right = "1em")
+)
+```
+
+
+```{r setup, include=FALSE}
+# https://www.garrickadenbuie.com/blog/decouple-code-and-output-in-xaringan-slides/
+knitr::opts_chunk$set(fig.showtext=TRUE,fig.dim=c(4.8, 4.5), fig.retina=2, out.width="100%")
+```
+
+```{r packages, include=FALSE}
+library(fontawesome)
+require(dplyr)
+require(readr)
+require(ggplot2)
+library(tsibble)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_solarized_light(
+#style_mono_accent(
+#  base_color = "#1c5253",
+  header_font_google = google_font("Roboto Slab"),
+  text_font_google   = google_font("Roboto", "300", "300i"),
+  code_font_google   = google_font("Roboto Mono"),
+  code_font_size = '0.7rem'
+)
+# for ggplot2
+theme_set(theme_xaringan())
+```
+
+
+---
+
+class: inverse, center, middle
+
+# Economics: Big economic data
+
+> FRED-MD ("Federal Reserve Economic Data Monthly Database") is a publicly available dataset. Originally designed for the analysis of ***big economic data***, the dataset contains more than one hundred features.
+
+***What drives economic cycles?***
+
+---
+
+## Economics ...
+
+- Variable of interest: choose any from 
+  - stock market returns, 
+  - unemployment rate, 
+  - inflation rate, etc.
+- Other variables: 
+  - financial indices
+  - housing,
+  - money and credtis, etc
+
+Start with a small subset of variables, and add more if you like
+
+---
+
+## Economics ... Data
+
+Data available here: https://research.stlouisfed.org/econ/mccracken/fred-databases/
+
+You can use a function provided by uDASH staff to get the data you need.
+
+```{r}
+download_data <- function() {
+  
+  # Load FRED-MD
+  data <- read_csv('https://files.stlouisfed.org/files/htdocs/fred-md/monthly/current.csv') %>%
+    rename(date = sasdate)
+  
+  # Remove any excess rows
+  data <- data %>%
+    slice(- 1) %>%
+    slice(- (n():(n() - 2)))
+  
+  # Format the date
+  data <- data %>%
+      mutate(date = yearmonth(date))
+}
+```
+
+```{r include=FALSE}
+dataset.file <- "data/economic-data.rda"
+if (file.exists(dataset.file)) {
+  load(dataset.file)
+} else {
+  eco_data <- download_data()
+  save(file=dataset.file,eco_data)
+}
+```
+
+---
+
+## Economics ... Cleaning and transformation
+
+Select a subset of features, exclude outliers
+
+```{r}
+  eco_data <- eco_data %>%
+    transmute(
+      Date = date,
+      IndustrialProduction = INDPRO,
+      UnemploymentRate = UNRATE,
+      HousingStarts = HOUSTS,
+      FedFundsRate = FEDFUNDS,
+      StockMarket = `S&P 500`,
+      ConsumerPriceIndex = `CPIAUCSL`,
+      PersonalIncome = RPI,
+      UnemploymentClaims = CLAIMSx
+      )
+```
+
+---
+
+## Economics ... Explore
+
+Univariate statistics, time series 
+
+.pull-left[
+```{r eco-eda, eval=FALSE}
+ggplot(eco_data, 
+       aes(Date, UnemploymentRate)) +
+  geom_point() +
+  theme(axis.text = element_text(size = 12,))
+```
+]
+
+.pull-right[
+```{r eco-eda-out, ref.label="eco-eda", echo=FALSE, warning=FALSE, message=FALSE}
+```
+]
+
+
+---
+
+## Economics ... Model
+
+Make data _stationary_ (more suitable for regression), apply multiple linear regression, select best explanatory variables
+
+```{r}
+eco_data <- eco_data %>%
+  mutate(
+    IndustrialProduction = difference(log(IndustrialProduction), diff = 1),
+    UnemploymentRate = difference(UnemploymentRate, diff = 1),
+    HousingStarts = log(HousingStarts),
+    FedFundsRate = difference(FedFundsRate, diff = 1),
+    StockMarket = difference(log(StockMarket), diff = 1),
+    ConsumerPriceIndex = difference(log(ConsumerPriceIndex), diff = 2),
+    PersonalIncome = difference(log(PersonalIncome), diff = 1),
+    UnemploymentClaims = difference(log(UnemploymentClaims), diff = 1)
+    ) 
+model <- lm(UnemploymentRate ~ ConsumerPriceIndex + IndustrialProduction + PersonalIncome 
+          + HousingStarts, eco_data)
+```
+
+---
+
+## Economics ... Visualise
+
+???
+
+---
+
+
+# Thanks!
+
+[`r fa(name = "twitter")` @uDASH_UNSW](https://twitter.com/uDASH_UNSW)
+
+[`r fa(name = "link")` //www.unsw.edu.au/research/udash](https://www.unsw.edu.au/research/udash)
+
+[`r fa(name = "paper-plane")` uDASH@unsw.edu.au](mailto:uDASH@unsw.edu.au )
+

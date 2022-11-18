@@ -1,0 +1,189 @@
+---
+title: "Choose your project"
+institute: "UNSW Data Science Hub"
+date: "21-11-2022"
+output:
+  xaringan::moon_reader:
+    css: [xaringan-themer.css, "css/footer.css"]
+    lib_dir: libs
+    nature:
+      countdown: 60000
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: true
+editor_options: 
+  chunk_output_type: console
+---
+layout: true
+
+<div class="my-footer"><span>UNSW Data Science Hub / <a href='https://www.unsw.edu.au/research/udash'>uDASH</a></span></div>
+
+<!-- this adds the link footer to all slides, depends on my-footer class in css-->
+
+```{r xaringan-logo, echo=FALSE}
+xaringanExtra::use_logo(
+  image_url = "../images/uDASH-logo.jpg",
+  position = xaringanExtra::css_position(top = "1em", right = "1em")
+)
+```
+
+```{r setup, include=FALSE}
+# https://www.garrickadenbuie.com/blog/decouple-code-and-output-in-xaringan-slides/
+knitr::opts_chunk$set(fig.showtext=TRUE,fig.dim=c(4.8, 4.5), fig.retina=2, out.width="100%")
+```
+
+```{r packages, include=FALSE}
+library(fontawesome)
+require(dplyr)
+require(ggplot2)
+require(readr)
+require(lubridate)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+uDASH_colors <- c(blue1="#CEDAD5", blue2="#16938F", blackish="#0E0F0F", green1="#79C45E", green2="#68A170", brownish="#949494", bluish="#769CBE", greenish="#4E722F")
+#style_solarized_dark(
+style_duo_accent(
+  primary_color = uDASH_colors[5], secondary_color = uDASH_colors[1],
+#  base_color = "#1c5253",
+  header_font_google = google_font("Roboto Slab"),
+  text_font_google   = google_font("Roboto", "300", "300i"),
+  code_font_google   = google_font("Roboto Mono"),
+  code_font_size = '0.7rem'
+)
+# for ggplot2
+theme_set(theme_xaringan())
+```
+
+
+
+
+---
+
+class: inverse, center, middle
+
+# Entertainment: Video Games Data
+
+> The video game industry has grown from niches to mainstream. It makes now more revenue than the international film industry. It has influenced the advance of personal computers with sound cards, graphics cards and 3D graphic accelerators.
+
+***Do Metacritic scores reflect popularity among users?***
+
+---
+
+## Video Games ...
+
+The dataset presented here are the metascores of videogames from 2000 to 2018
+
+- Variables of interest: 
+  - metascore: averaged scores from reviews, 
+  - userscore: averaged scores from user ratings,
+- Other variables: 
+  - Console
+  - Release date
+  - Name of the game
+
+---
+
+## Video Games ... Data
+
+The data is available from [kaggle](https://www.kaggle.com/datasets/destring/metacritic-reviewed-games-since-2000), will be provided by uDASH staff.
+
+
+```{r message=FALSE}
+games_data <- read_csv("data/video-games.csv")
+
+games_data %>% slice(1:10)
+```
+
+---
+
+## Video Games ... Cleaning and transformation
+
+Transform userscore from character to numeric, transform date from character to date, group consoles:
+
+```{r}
+games_data <- 
+  games_data %>% 
+  mutate(userscore=as.numeric(userscore),
+        newdate=mdy(date),
+        manufacturer=case_when(
+          console %in% c('VITA','PSP','PS','PS2','PS3','PS4') ~ "SONY",
+          console %in% c('X360','XBOX','XONE') ~ "MICROSOFT",
+          console %in% c('3DS','DS','GBA','Switch','WII','WIIU','GC','N64') ~ "NINTENDO",
+          console %in% c('DC') ~ "SEGA",
+          TRUE ~ console
+        ))
+```
+
+---
+
+## Video Games ...  Explore
+
+Boxplots of variables
+
+
+.pull-left[
+```{r game-eda, eval=FALSE}
+ggplot(games_data) +
+  geom_boxplot(aes(y=metascore, 
+                   x=manufacturer,
+                   fill=manufacturer)) +
+  xlab("Manufacturer") +
+  ylab("Metascore") + 
+  theme(legend.position='none',
+        axis.text = element_text(size = 12,))
+```
+]
+
+.pull-right[
+```{r game-eda-out, ref.label="game-eda", echo=FALSE, warning=FALSE, message=FALSE}
+```
+]
+
+---
+
+## Video Games ... Model
+
+Multiple linear regression
+
+```{r }
+model <- lm(userscore ~ metascore + manufacturer, data=games_data)
+summary(model)
+```
+
+---
+
+## Video Games ... Visualise
+
+
+.pull-left[
+```{r game-viz, eval=FALSE}
+ggplot(games_data) +
+  geom_point(aes(x=metascore, 
+                y=userscore,
+                pch=console)) +
+  xlab("Metascore") +
+  ylab("Userscore") + 
+  theme(legend.position='none')
+```
+]
+
+.pull-right[
+```{r game-viz-out, ref.label="game-viz", echo=FALSE, warning=FALSE, message=FALSE}
+```
+]
+
+
+
+---
+
+
+# Thanks!
+
+[`r fa(name = "twitter")` @uDASH_UNSW](https://twitter.com/uDASH_UNSW)
+
+[`r fa(name = "link")` //www.unsw.edu.au/research/udash](https://www.unsw.edu.au/research/udash)
+
+[`r fa(name = "paper-plane")` uDASH@unsw.edu.au](mailto:uDASH@unsw.edu.au )
+

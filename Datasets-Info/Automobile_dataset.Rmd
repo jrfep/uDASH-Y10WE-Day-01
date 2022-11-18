@@ -1,0 +1,169 @@
+---
+title: "Choose your project"
+institute: "UNSW Data Science Hub"
+date: "21-11-2022"
+output:
+  xaringan::moon_reader:
+    css: [xaringan-themer.css, "css/footer.css"]
+    lib_dir: libs
+    nature:
+      countdown: 60000
+      highlightStyle: solarized-dark
+      highlightLines: true
+      countIncrementalSlides: true
+editor_options: 
+  chunk_output_type: console
+---
+layout: true
+
+<div class="my-footer"><span>UNSW Data Science Hub / <a href='https://www.unsw.edu.au/research/udash'>uDASH</a></span></div>
+
+<!-- this adds the link footer to all slides, depends on my-footer class in css-->
+
+```{r xaringan-logo, echo=FALSE}
+xaringanExtra::use_logo(
+  image_url = "images/uDASH-logo.jpg",
+  position = xaringanExtra::css_position(top = "1em", right = "1em")
+)
+```
+
+```{r setup, include=FALSE}
+# https://www.garrickadenbuie.com/blog/decouple-code-and-output-in-xaringan-slides/
+knitr::opts_chunk$set(fig.showtext=TRUE,fig.dim=c(4.8, 4.5), fig.retina=2, out.width="100%")
+```
+
+```{r packages, include=FALSE}
+library(fontawesome)
+require(dplyr)
+require(ggplot2)
+require(readr)
+require(lubridate)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_solarized_light(
+#style_mono_accent(
+#  base_color = "#1c5253",
+  header_font_google = google_font("Roboto Slab"),
+  text_font_google   = google_font("Roboto", "300", "300i"),
+  code_font_google   = google_font("Roboto Mono"),
+  code_font_size = '0.7rem'
+)
+# for ggplot2
+theme_set(theme_xaringan())
+```
+
+
+
+---
+
+class: inverse, center, middle
+
+# `r fa(name = "lightbulb")` Business insights: Small automotive business
+
+> By using data analytics, small businesses can gain insights into their customers, their products, and their operations. This information can help them make better decisions about how to run their business.
+
+***???***
+
+---
+
+## Small business ...
+
+This is a dataset of the jobs performed by a small automotive business located in Botany in 2010-2020.  The dataset is itemised by each job performed and further by invoice number such that several jobs (and several cars) can be on a single invoice. 
+ 
+- Variables of interest: 
+  - Date of the job,
+  - Cost of the job,
+- Other variables: 
+  - Postcode of costumer,
+  - Car make and model
+  - Date of last service,
+  - Odometer reading
+
+---
+
+## Small business ... Data
+
+The data will be provided by uDASH staff.
+
+
+```{r message=FALSE}
+auto_data <- read_csv("data/small_business_invoices.csv")
+
+auto_data %>% slice(1:5)
+```
+
+---
+
+## Small business ... Cleaning and transformation
+
+The dataset was entered by hand and thus has inconsistencies and omissions that will require cleaning.  Some data cleaning has already been performed.  
+
+TO DO: Assign data type (numeric, factor, date), handle missing information, group and summarise, etc.
+
+
+```{r}
+auto_data <- 
+  auto_data %>% 
+  mutate(transaction_date=dmy(TRANSACTION_DATE),
+         service_date=dmy(LAST_SERVICE)) %>%
+  filter(!is.na(transaction_date)) %>% 
+  group_by(INVOICE_NO,Postcode,transaction_date,service_date) %>% 
+  summarise(total_cost=sum(TOTAL),vehicle_year=max(VEHICLE_YEAR))
+```
+
+---
+
+## Small business ...  Explore
+
+Boxplots of variables
+
+.pull-left[
+```{r game-eda, eval=FALSE}
+ggplot(auto_data) +
+  geom_boxplot(aes(y=total_cost, 
+                   group=month(transaction_date),
+                   fill=month(transaction_date))) +
+  scale_y_continuous(trans = "log") +
+  xlab("Month") +
+  ylab("Total (log scale)") + 
+  theme(legend.position='none',
+        axis.text = element_text(size = 12,))
+```
+]
+
+.pull-right[
+```{r game-eda-out, ref.label="game-eda", echo=FALSE, warning=FALSE, message=FALSE}
+```
+]
+
+---
+
+## Small business ... Model
+
+Linear regression
+
+```{r }
+model <- lm(total_cost ~ vehicle_year, data=auto_data)
+summary(model)
+```
+
+---
+
+## Small business ... Visualise
+
+???
+
+
+---
+
+
+# Thanks!
+
+[`r fa(name = "twitter")` @uDASH_UNSW](https://twitter.com/uDASH_UNSW)
+
+[`r fa(name = "link")` //www.unsw.edu.au/research/udash](https://www.unsw.edu.au/research/udash)
+
+[`r fa(name = "paper-plane")` uDASH@unsw.edu.au](mailto:uDASH@unsw.edu.au )
+
