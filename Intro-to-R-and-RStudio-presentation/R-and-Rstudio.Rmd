@@ -81,7 +81,7 @@ library(fontawesome)
 
 ## RStudio Cloud (== Posit Cloud)
 
-[`r fa(name = "link")` //rstudio.cloud/](https://rstudio.cloud/)
+[`r fa(name = "link")` //posit.cloud/](https://posit.cloud/)
 
 
 - Cloud-based solution

@@ -816,6 +816,28 @@ cbind(unsw_data, pred = predict(model, newdata = unsw_data)) %>%
 ]
 
 ---
+
+## Air quality:
+
+https://posit.cloud/content/4990379
+
+## Big economic data:
+
+https://posit.cloud/content/4990530
+
+##Emotions:
+
+https://posit.cloud/content/4990398
+
+## Small automotive business
+
+https://posit.cloud/content/4990395
+
+## Video Games
+
+https://posit.cloud/content/4990394
+
+
 ---
 
 # Thanks!
