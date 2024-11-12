@@ -33,6 +33,7 @@ knitr::opts_chunk$set(fig.showtext=TRUE,fig.dim=c(4.8, 4.5), fig.retina=2, out.w
 ```
 ```{r packages, include=FALSE}
 library(fontawesome)
+library(showtext)
 require(dplyr)
 require(ggplot2)
 require(tsibble)
@@ -148,6 +149,7 @@ class: inverse, middle
 
 - `r fa(name = "cloud-sun-rain")` Climate: Weather & Air Quality in Schools
 
+- <img src="images/crab-svgrepo-com.svg" alt="Mud Crab Icon" style="width: 1em; height: 1em;"/> Ecology: Mud Crab tracking
 ---
 
 class: inverse, center, middle
@@ -175,19 +177,13 @@ class: inverse, center, middle
 
 ---
 
-## Emotions ... Data
+## Emotions ... 
+
+#### Data
 
 Data and metadata available here:
-[`r fa(name = "link")` //osf.io/h7uqv/](https://osf.io/h7uqv/)
+[`r fa(name = "link")` //osf.io/h7uqv/](https://osf.io/h7uqv/). You can download this file from R!
 
-You can download your file from R!
-
-```{r, eval=FALSE}
-download.file(url="https://osf.io/download/zpfya/",
-              destfile="data/AgeAdvantagesEmotionCovid_Data.csv")
-
-emotions_data <- read.csv("data/AgeAdvantagesEmotionCovid_Data.csv")
-```
 
 ```{r include=FALSE}
 dataset.file <- "data/AgeAdvantagesEmotionCovid_Data.csv"
@@ -199,47 +195,20 @@ emotions_data <- read.csv(dataset.file)
 ```
 
 
----
 
-## Emotions ... Cleaning and transformation
+#### Cleaning and transformation
 
 Select and rename your variables
 
-```{r}
-tibble(emotions_data) %>% slice_head(n=5)
-```
-
----
-
-## Emotions ... Explore
+#### Explore
 
 Range of ages, mean and extreme values of intensity and frequency of emotions, personality traits
 
-.pull-left[
-```{r emo-eda, eval=FALSE}
-ggplot(data=emotions_data,
-       aes(x=age)) +
-  geom_histogram(bins=14)
-```
-]
 
-.pull-right[
-```{r emo-eda-out, ref.label="emo-eda", echo=FALSE, warning=FALSE, message=FALSE}
-```
-]
-
-
----
-
-## Emotions ... Model
+#### Model
 
 Increase or decrease of emotions by age? differences between groups?
 
-```{r }
-model <- lm(avg_i_neg ~ age,
-   emotions_data)
-summary(model)
-```
 
 ---
 
@@ -248,20 +217,21 @@ summary(model)
 Combine scatterplot and regression lines
 
 .pull-left[
-```{r emo-viz, eval=FALSE}
+```{r emo-eda, echo=FALSE, warning=FALSE, message=FALSE}
+ggplot(data=emotions_data,
+       aes(x=age)) +
+  geom_histogram(bins=14)
+```
+]
+
+.pull-right[
+```{r emo-viz, echo=FALSE, warning=FALSE,message=FALSE}
 ggplot(data=emotions_data,
        aes(x=age,y=avg_i_neg)) +
   geom_point() +
   geom_smooth(method = lm)
 ```
 ]
-
-.pull-right[
-```{r emo-viz-out, ref.label="emo-viz", echo=FALSE, warning=FALSE,message=FALSE}
-```
-]
-
----
 ---
 
 class: inverse, center, middle
