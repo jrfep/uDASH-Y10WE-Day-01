@@ -18,7 +18,7 @@ class: center, middle, inverse, title-slide
 ### UNSW Data Science Hub
 ]
 .date[
-### 21-11-2022
+### 21-11-2024
 ]
 
 ---
@@ -214,9 +214,9 @@ Increase or decrease of emotions by age? differences between groups?
 
 ---
 
-## Emotions ... Visualise
+## Emotions ... 
 
-Combine scatterplot and regression lines
+### Visualise
 
 .pull-left[
 &lt;img src="Project_datasets_files/figure-html/emo-eda-1.png" width="100%" /&gt;
@@ -253,139 +253,41 @@ This is a dataset of the jobs performed by a small automotive business located i
 
 ---
 
-## Small business ... Data
+## Small business ... 
+
+#### Data
 
 The data will be provided by uDASH staff.
 
 
 
-```r
-auto_data &lt;- read_csv("data/small_business_invoices.csv")
-## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat &lt;- vroom(...)
-##   problems(dat)
 
-auto_data %&gt;% slice(1:5)
-## # A tibble: 5 × 19
-##   CUSTOMER_NO Suburb    Postcode INVOICE_NO TRANSACTION_DATE OwingStatus TOTAL
-##         &lt;dbl&gt; &lt;chr&gt;        &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;       &lt;dbl&gt;
-## 1        2301 Undefined        0      13266 NULL             Final        66.1
-## 2         375 Undefined        0        527 NULL             Final        36.4
-## 3          10 BOTANY        2019         26 02.11.2010       Final       200  
-## 4          10 BOTANY        2019         26 02.11.2010       Final        12  
-## 5          10 BOTANY        2019         26 02.11.2010       Final       255. 
-## # ℹ 12 more variables: PAID &lt;dbl&gt;, `Owing/Unfinalised Amount` &lt;dbl&gt;,
-## #   REGO_NO &lt;chr&gt;, MAKE &lt;chr&gt;, MODEL_NO &lt;chr&gt;, DESCRIPTION &lt;chr&gt;,
-## #   LAST_SERVICE &lt;chr&gt;, VEHICLE_YEAR &lt;dbl&gt;, VehicleOdometer &lt;dbl&gt;,
-## #   `Odometer-TransactionDate` &lt;dbl&gt;, `FleetVehicle?` &lt;chr&gt;, X19 &lt;lgl&gt;
-```
+#### Cleaning and transformation
 
----
-
-## Small business ... Cleaning and transformation
-
-The dataset was entered by hand and thus has inconsistencies and omissions that will require cleaning.  Some data cleaning has already been performed.
-
-TO DO: Assign data type (numeric, factor, date), handle missing information, group and summarise, etc.
+The dataset was entered by hand and thus has inconsistencies and omissions that will require cleaning.  Some data cleaning has already been performed. TO DO: Assign data type (numeric, factor, date), handle missing information, group and summarise, etc.
 
 
+#### Explore
 
-```r
-auto_data &lt;-
-  auto_data %&gt;%
-  mutate(transaction_date=dmy(TRANSACTION_DATE),
-         service_date=dmy(LAST_SERVICE)) %&gt;%
-  filter(!is.na(transaction_date)) %&gt;%
-  group_by(INVOICE_NO,Postcode,transaction_date,service_date) %&gt;%
-  summarise(total_cost=sum(TOTAL),vehicle_year=max(VEHICLE_YEAR))
-## Warning: There were 2 warnings in `mutate()`.
-## The first warning was:
-## ℹ In argument: `transaction_date = dmy(TRANSACTION_DATE)`.
-## Caused by warning:
-## !  2 failed to parse.
-## ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
-## `summarise()` has grouped output by 'INVOICE_NO', 'Postcode',
-## 'transaction_date'. You can override using the `.groups` argument.
-```
+Histogram of variables, etc
 
----
-
-## Small business ...  Explore
-
-Histogram of variables
-
-.pull-left[
-
-```r
-ggplot(auto_data) +
-  geom_histogram(aes(x=total_cost)) +
-  scale_x_continuous(trans = "sqrt",
-                     breaks=c(300,1200,3000,6000)) +
-  xlab("Total cost (sq root)") +
-  theme(legend.position='none',
-        axis.text = element_text(size = 12,))
-```
-]
-
-.pull-right[
-&lt;img src="Project_datasets_files/figure-html/smallbiz-eda-out-1.png" width="100%" /&gt;
-]
-
----
-
-## Small business ... Model
+####  Model
 
 Linear regression
 
-
-```r
-model &lt;- lm(total_cost ~ vehicle_year, data=auto_data)
-summary(model)
-## 
-## Call:
-## lm(formula = total_cost ~ vehicle_year, data = auto_data)
-## 
-## Residuals:
-##    Min     1Q Median     3Q    Max 
-## -389.9 -249.9 -133.4   71.0 9611.9 
-## 
-## Coefficients:
-##                Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)   3.899e+02  4.447e+00  87.671   &lt;2e-16 ***
-## vehicle_year -1.449e-08  9.106e-08  -0.159    0.874    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 484.4 on 11867 degrees of freedom
-##   (22 observations deleted due to missingness)
-## Multiple R-squared:  2.133e-06,	Adjusted R-squared:  -8.213e-05 
-## F-statistic: 0.02531 on 1 and 11867 DF,  p-value: 0.8736
-```
-
 ---
 
-## Small business ... Visualise
+## Small business ... 
+
+#### Visualise
 
 .pull-left[
-
-```r
-ggplot(auto_data) +
-  geom_boxplot(aes(y=total_cost,
-                   x=year(transaction_date),
-                   group=year(transaction_date))) +
-  scale_y_continuous(trans = "log") +
-  xlab("Year") +
-  ylab("Total (log scale)") +
-  theme(legend.position='none',
-        axis.text = element_text(size = 12,))
-```
+&lt;img src="Project_datasets_files/figure-html/smallbiz-eda-1.png" width="100%" /&gt;
 ]
 
 .pull-right[
-&lt;img src="Project_datasets_files/figure-html/smallbiz-viz-out-1.png" width="100%" /&gt;
+&lt;img src="Project_datasets_files/figure-html/smallbiz-viz-1.png" width="100%" /&gt;
 ]
-
 
 ---
 
@@ -414,133 +316,43 @@ The dataset presented here are the metascores of videogames from 2000 to 2018
 
 ---
 
-## Video Games ... Data
+## Video Games ... 
+
+#### Data
 
 The data is available from
 [<svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg> kaggle](https://www.kaggle.com/datasets/destring/metacritic-reviewed-games-since-2000), will be provided by uDASH staff.
 
 
 
-```r
-games_data &lt;- read_csv("data/video-games.csv")
 
-games_data %&gt;% slice(1:10)
-## # A tibble: 10 × 5
-##    metascore name                   console userscore date        
-##        &lt;dbl&gt; &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;     &lt;chr&gt;       
-##  1        97 Grand Theft Auto V     PS3     8.3       Sep 17, 2013
-##  2        97 Grand Theft Auto V     X360    8.3       Sep 17, 2013
-##  3        95 The Last of Us         PS3     9.2       Jun 14, 2013
-##  4        94 BioShock Infinite      PS3     8.5       Mar 26, 2013
-##  5        94 BioShock Infinite      PC      8.6       Mar 25, 2013
-##  6        93 BioShock Infinite      X360    8.5       Mar 26, 2013
-##  7        93 Super Mario 3D World   WIIU    8.9       Nov 22, 2013
-##  8        92 Fire Emblem: Awakening 3DS     9.1       Feb 4, 2013 
-##  9        92 Rayman Legends         WIIU    8.7       Sep 3, 2013 
-## 10        91 Fez                    PC      6.7       May 1, 2013
-```
+#### Cleaning and transformation
 
----
+Transform userscore from character to numeric, transform date from character to date, group consoles, etc
 
-## Video Games ... Cleaning and transformation
-
-Transform userscore from character to numeric, transform date from character to date, group consoles:
-
-
-```r
-games_data &lt;-
-  games_data %&gt;%
-  filter(!userscore %in% "tbd") %&gt;%
-  mutate(userscore=as.numeric(userscore),
-        newdate=mdy(date),
-        manufacturer=case_when(
-          console %in% c('VITA','PSP','PS','PS2','PS3','PS4') ~ "SONY",
-          console %in% c('X360','XBOX','XONE') ~ "MICROSOFT",
-          console %in% c('3DS','DS','GBA','Switch','WII','WIIU','GC','N64') ~ "NINTENDO",
-          console %in% c('DC') ~ "SEGA",
-          TRUE ~ console
-        ))
-```
-
----
-
-## Video Games ...  Explore
+####  Explore
 
 Boxplots of variables
 
-
-.pull-left[
-
-```r
-ggplot(games_data) +
-  geom_boxplot(aes(y=metascore,
-                   x=manufacturer,
-                   fill=manufacturer)) +
-  xlab("Manufacturer") +
-  ylab("Metascore") +
-  theme(legend.position='none',
-        axis.text = element_text(size = 12,))
-```
-]
-
-.pull-right[
-&lt;img src="Project_datasets_files/figure-html/game-eda-out-1.png" width="100%" /&gt;
-]
-
----
-
-## Video Games ... Model
+#### Model
 
 Multiple linear regression
 
 
-```r
-model &lt;- lm(userscore ~ metascore + manufacturer, data=games_data)
-summary(model)
-## 
-## Call:
-## lm(formula = userscore ~ metascore + manufacturer, data = games_data)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -6.3293 -0.5039  0.1603  0.7082  3.5116 
-## 
-## Coefficients:
-##                        Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)           2.6391848  0.0563493  46.836  &lt; 2e-16 ***
-## metascore             0.0602084  0.0007443  80.894  &lt; 2e-16 ***
-## manufacturerNINTENDO  0.4020097  0.0295041  13.626  &lt; 2e-16 ***
-## manufacturerPC       -0.0161904  0.0275006  -0.589    0.556    
-## manufacturerSEGA      0.6255598  0.1180356   5.300 1.18e-07 ***
-## manufacturerSONY      0.1551340  0.0263808   5.881 4.18e-09 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 1.12 on 14268 degrees of freedom
-## Multiple R-squared:  0.3228,	Adjusted R-squared:  0.3226 
-## F-statistic:  1360 on 5 and 14268 DF,  p-value: &lt; 2.2e-16
-```
-
 ---
 
-## Video Games ... Visualise
+## Video Games ... 
+
+#### Visualise
+
 
 
 .pull-left[
-
-```r
-ggplot(games_data) +
-  geom_point(aes(x=metascore,
-                y=userscore,
-                pch=manufacturer)) +
-  xlab("Metascore") +
-  ylab("Userscore") +
-  theme(legend.position='none')
-```
+&lt;img src="Project_datasets_files/figure-html/game-eda-1.png" width="100%" /&gt;
 ]
 
 .pull-right[
-&lt;img src="Project_datasets_files/figure-html/game-viz-out-1.png" width="100%" /&gt;
+&lt;img src="Project_datasets_files/figure-html/game-viz-1.png" width="100%" /&gt;
 ]
 
 
@@ -573,120 +385,42 @@ Start with a small subset of variables, and add more if you like
 
 ---
 
-## Big economic data ... Data
+## Big economic data ... 
+
+#### Data
 
 Data available from the [<svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg> FRED homepage](https://research.stlouisfed.org/econ/mccracken/fred-databases/)
 
 You can use a function provided by uDASH staff to get the data you need.
 
 
-```r
-download_data &lt;- function() {
 
-  # Load FRED-MD
-  data &lt;- read_csv('https://files.stlouisfed.org/files/htdocs/fred-md/monthly/current.csv') %&gt;%
-    rename(date = sasdate)
+#### Cleaning and transformation
 
-  # Remove any excess rows
-  data &lt;- data %&gt;%
-    slice(- 1) %&gt;%
-    slice(- (n():(n() - 2)))
+Select a subset of features, exclude outliers.
 
-  # Format the date
-  data &lt;- data %&gt;%
-      mutate(date = yearmonth(date))
-}
-```
+#### Explore
 
+Univariate statistics, time series.
 
-
----
-
-## Big economic data ... Cleaning and transformation
-
-Select a subset of features, exclude outliers
-
-
-```r
-  eco_data &lt;- eco_data %&gt;%
-    transmute(
-      Date = date,
-      IndustrialProduction = INDPRO,
-      UnemploymentRate = UNRATE,
-      HousingStarts = HOUSTS,
-      FedFundsRate = FEDFUNDS,
-      StockMarket = `S&amp;P 500`,
-      ConsumerPriceIndex = `CPIAUCSL`,
-      PersonalIncome = RPI,
-      UnemploymentClaims = CLAIMSx
-      )
-```
-
----
-
-## Big economic data ... Explore
-
-Univariate statistics, time series
-
-.pull-left[
-
-```r
-ggplot(eco_data,
-       aes(Date, UnemploymentRate)) +
-  geom_point() +
-  theme(axis.text = element_text(size = 12,))
-```
-]
-
-.pull-right[
-&lt;img src="Project_datasets_files/figure-html/eco-eda-out-1.png" width="100%" /&gt;
-]
-
-
----
-
-## Big economic data ... Model
+#### Model
 
 Make data _stationary_ (more suitable for regression), apply multiple linear regression, select best explanatory variables
 
 
-```r
-eco_data_transformed &lt;- eco_data %&gt;%
-  mutate(
-    IndustrialProduction = difference(log(IndustrialProduction), diff = 1),
-    UnemploymentRate = difference(UnemploymentRate, diff = 1),
-    HousingStarts = log(HousingStarts),
-    FedFundsRate = difference(FedFundsRate, diff = 1),
-    StockMarket = difference(log(StockMarket), diff = 1),
-    ConsumerPriceIndex = difference(log(ConsumerPriceIndex), diff = 2),
-    PersonalIncome = difference(log(PersonalIncome), diff = 1),
-    UnemploymentClaims = difference(log(UnemploymentClaims), diff = 1)
-    )
-model &lt;- lm(UnemploymentRate ~ ConsumerPriceIndex + IndustrialProduction + PersonalIncome
-          + HousingStarts, eco_data_transformed)
-```
 
 ---
 
-## Big economic data ... Visualise
+## Big economic data ... 
 
-Combine scatterplot and regression lines
+#### Visualise
 
 .pull-left[
-
-```r
-ggplot(data=eco_data_transformed,
-       aes(y=UnemploymentRate,
-           x=IndustrialProduction,
-           size=ConsumerPriceIndex)) +
-  geom_point() +
-  geom_smooth(method = 'loess') +
-  theme(legend.position='none')
-```
+&lt;img src="Project_datasets_files/figure-html/eco-eda-1.png" width="100%" /&gt;
 ]
 
 .pull-right[
-&lt;img src="Project_datasets_files/figure-html/eco-viz-out-1.png" width="100%" /&gt;
+&lt;img src="Project_datasets_files/figure-html/eco-viz-1.png" width="100%" /&gt;
 ]
 
 
@@ -723,157 +457,111 @@ Since measurements are taken every 20 minutes, we have 43771 data points!
 
 ---
 
-## Weather &amp; Air Quality ... Data
+## Weather &amp; Air Quality ... 
+
+#### Data
 
 Detailed time-series weather and air-quality data collected at Sydney schools are available for download via [TERN](https://www.tern.org.au/news-swaq-data/), but a cleaned version will be provided by uDASH staff.
 
 
 
-```r
-# reading in data
-airqual &lt;- read_csv("data/air-quality.csv") %&gt;%
-  # nice names
-  clean_names()
 
-# preview
-airqual %&gt;%
-  head(3)
-## # A tibble: 3 × 115
-##   time                ludd_no2 ludd_so2 ludd_co ludd_o3 ludd_pm25 ludd_pm10
-##   &lt;dttm&gt;                 &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
-## 1 2019-09-01 00:00:00    0.013    0.031   0.058   0.01        2.3       7.3
-## 2 2019-09-01 00:20:00    0.003    0.025   0.051   0.019       2.3       8.2
-## 3 2019-09-01 00:40:00    0.011    0.023   0.032   0.019       2         4.7
-## # ℹ 108 more variables: ludd_t &lt;dbl&gt;, ludd_rh &lt;dbl&gt;, ludd_p &lt;dbl&gt;,
-## #   ludd_rain &lt;dbl&gt;, ludd_wd &lt;dbl&gt;, ludd_ws &lt;dbl&gt;, broo_no2 &lt;dbl&gt;,
-## #   broo_so2 &lt;dbl&gt;, broo_co &lt;dbl&gt;, broo_o3 &lt;dbl&gt;, broo_pm25 &lt;dbl&gt;,
-## #   broo_pm10 &lt;dbl&gt;, broo_t &lt;dbl&gt;, broo_rh &lt;dbl&gt;, broo_p &lt;dbl&gt;,
-## #   broo_rain &lt;dbl&gt;, broo_wd &lt;dbl&gt;, broo_ws &lt;dbl&gt;, dulw_t &lt;dbl&gt;, dulw_rh &lt;dbl&gt;,
-## #   dulw_p &lt;dbl&gt;, dulw_rain &lt;dbl&gt;, dulw_wd &lt;dbl&gt;, dulw_ws &lt;dbl&gt;,
-## #   glen_no2 &lt;dbl&gt;, glen_so2 &lt;dbl&gt;, glen_co &lt;dbl&gt;, glen_o3 &lt;dbl&gt;, …
-```
-
----
-
-## Weather &amp; Air Quality ... Cleaning and transformation
+#### Cleaning and transformation
 
 Fix dates, reshape table (from wide to long format), filter missing data...
 
 
-```r
-airqual &lt;- airqual %&gt;%
-  # Sydney (AEST) is UTC +10
-  mutate(time_local = time + hours(10))
 
-# changing column structure of data
-airqual_wide &lt;- airqual %&gt;%
-  # now that we have local time don't need utc
-  select(-time) %&gt;%
-  pivot_longer(-time_local) %&gt;%
-  mutate(var_type = as.factor(str_sub(name, start = 6)),
-         location = as.factor(str_sub(name, end = 4))) %&gt;%
-  select(-name) %&gt;%
-  # wider back to the format we want
-  pivot_wider(names_from = var_type, values_from = value)
-```
+#### Explore
 
-
----
-
-## Weather &amp; Air Quality ...  Explore
+Relationships between key variables for each site.
 
 
 ```
 ## Adding missing grouping variables: `location`
 ```
 
-Plotting relationship between `\(NO_2\)` and key variables for one site (UNSW):
-
-.pull-left[
-
-```r
-unsw_data %&gt;%
-  select(hour, t, rh, no2) %&gt;%
-  pivot_longer(-no2) %&gt;%
-  ggplot(aes(x = value, y = no2)) +
-  geom_point() +
-  facet_wrap(~ name, scales = "free_x", nrow = 2) +
-  xlab("") +
-  theme(axis.text.y = element_blank())
-```
-]
-
-.pull-right[
-&lt;img src="Project_datasets_files/figure-html/airq-eda-out-1.png" width="100%" /&gt;
-]
-
----
-
-## Weather &amp; Air Quality ... Model
+#### Model
 
 Multiple linear regression, for example between temperature, relative humidity, and NO&lt;sub&gt;2&lt;/sub&gt; concentrations.
 
-
-```r
-# fitting multiple linear regression
-model &lt;- lm( no2 ~ t + rh + dow,
-             data = unsw_data)
-summary(model)
-## 
-## Call:
-## lm(formula = no2 ~ t + rh + dow, data = unsw_data)
-## 
-## Residuals:
-##       Min        1Q    Median        3Q       Max 
-## -0.045321 -0.010969  0.001469  0.010477  0.128899 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -4.544e-02  6.439e-03  -7.056 2.96e-12 ***
-## t            3.905e-03  1.805e-04  21.636  &lt; 2e-16 ***
-## rh          -2.621e-04  4.171e-05  -6.284 4.70e-10 ***
-## dow2         4.748e-03  1.538e-03   3.088  0.00206 ** 
-## dow3         6.394e-03  1.983e-03   3.224  0.00130 ** 
-## dow4        -1.123e-02  1.748e-03  -6.422 1.97e-10 ***
-## dow5        -3.318e-03  1.488e-03  -2.230  0.02597 *  
-## dow6         6.363e-03  1.418e-03   4.489 7.89e-06 ***
-## dow7        -2.428e-03  1.394e-03  -1.741  0.08196 .  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 0.01448 on 1141 degrees of freedom
-##   (10 observations deleted due to missingness)
-## Multiple R-squared:  0.4662,	Adjusted R-squared:  0.4625 
-## F-statistic: 124.6 on 8 and 1141 DF,  p-value: &lt; 2.2e-16
-```
-
 ---
 
 
-## Weather &amp; Air Quality ... Visualise
+## Weather &amp; Air Quality ... 
 
-Combining predictions with data to plot the results of the model
+#### Visualise
 
+Combining predictions with data to plot the results of the model. Plotting relationship between `\(NO_2\)` and key variables for one site (UNSW):
 
 .pull-left[
-
-```r
-cbind(unsw_data, pred = predict(model, newdata = unsw_data)) %&gt;%
-  ggplot(aes(x = no2, y = pred)) +
-  geom_point() +
-  geom_abline(slope = 1,
-              intercept = 0,
-              color = "blue") +
-  xlab("Observed") +
-  ylab("Predicted")
-```
+&lt;img src="Project_datasets_files/figure-html/airq-eda-1.png" width="100%" /&gt;
 ]
 
 .pull-right[
-&lt;img src="Project_datasets_files/figure-html/airq-viz-out-1.png" width="100%" /&gt;
+&lt;img src="Project_datasets_files/figure-html/airq-viz-1.png" width="100%" /&gt;
 ]
 
 ---
+
+
+---
+
+class: inverse, center, middle
+
+#  &lt;img src="images/crab-svgrepo-com.svg" alt="Mud Crab Icon" style="width: 1em; height: 1em;"/&gt; Ecology: Mud Crab Tracking
+
+&gt;Environmental factors such as water temperature, conductivity, and time of day significantly influence the behavioral patterns of Giant Mud Crabs, including their movement, activity levels, and periods of heightened activity
+
+*** Are there significant correlations or patterns that can be explored to understand response to climate variability? *** 
+
+---
+
+## Mud Crab Tracking  ...
+
+Crabs were tracked using acoustic telemetry, which involved attaching tags with distinct sounds.To pick up these sounds, receiver stations, functioning like listening posts, were set up in the study area. When a crab was within range of three or more receivers, its exact location could be determined. Acceleration was measured along three axes for a period of 20 seconds, recording 5 measurements per second (5 Hz).
+    &lt;div style="float:right;"&gt;
+    &lt;img src="images/crab_speed_measure.jpeg" alt="Crab Speed Measure"/&gt;
+  &lt;/div&gt;
+- Primary variables:
+  - crab: Unique identifier for each crab
+  - sex: male/female
+  - cl_mm: Size of the crab's shell in millimeters
+  - time: Timestamp  YYYY-MM-DD hh:mm:ss
+  - lat, lon: Geospatial measurements in degrees
+  - x, y: The easting and northing of the detection in meters 
+  - accel: The acceleration of the crab in meters per second squared 
+  - temperature_c: Water temperature in degrees Celsius 
+  - conductivity_ms_cm: Electrical conductivity in millisiemens per centimeter
+---
+
+## Mud Crab Tracking ... 
+
+
+#### Data
+
+Data provided by uDASH staff.
+
+#### Cleaning and transformation
+
+Data types and formats for handling date and time are particularly important for data analysis.
+
+#### Explore
+
+Plot to visualize the paths of individual crabs based on their spatial coordinates
+Potential differences in behavior between individual crabs (or possibly between sexes)!
+
+#### Model
+
+- Some questions you may consider asking of this data
+  - What effect does water temperature have on crab behavior?
+  - What effect does conductivity have on crab behavior?
+  - What effect does the time of day have on crab behavior?
+---
+
+## Mud Crab Tracking ... 
+
+#### Visualise
 
 
 ---
@@ -882,26 +570,22 @@ class: middle
 
 # Choose your project
 
-- <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M163.9 136.9c-29.4-29.8-29.4-78.2 0-108s77-29.8 106.4 0l17.7 18 17.7-18c29.4-29.8 77-29.8 106.4 0s29.4 78.2 0 108L310.5 240.1c-6.2 6.3-14.3 9.4-22.5 9.4s-16.3-3.1-22.5-9.4L163.9 136.9zM568.2 336.3c13.1 17.8 9.3 42.8-8.5 55.9L433.1 485.5c-23.4 17.2-51.6 26.5-80.7 26.5H192 32c-17.7 0-32-14.3-32-32V416c0-17.7 14.3-32 32-32H68.8l44.9-36c22.7-18.2 50.9-28 80-28H272h16 64c17.7 0 32 14.3 32 32s-14.3 32-32 32H288 272c-8.8 0-16 7.2-16 16s7.2 16 16 16H392.6l119.7-88.2c17.8-13.1 42.8-9.3 55.9 8.5zM193.6 384l0 0-.9 0c.3 0 .6 0 .9 0z"/></svg> Psychology: Emotions during the pandemic 
-
-  - https://posit.cloud/content/4990398
+- <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M163.9 136.9c-29.4-29.8-29.4-78.2 0-108s77-29.8 106.4 0l17.7 18 17.7-18c29.4-29.8 77-29.8 106.4 0s29.4 78.2 0 108L310.5 240.1c-6.2 6.3-14.3 9.4-22.5 9.4s-16.3-3.1-22.5-9.4L163.9 136.9zM568.2 336.3c13.1 17.8 9.3 42.8-8.5 55.9L433.1 485.5c-23.4 17.2-51.6 26.5-80.7 26.5H192 32c-17.7 0-32-14.3-32-32V416c0-17.7 14.3-32 32-32H68.8l44.9-36c22.7-18.2 50.9-28 80-28H272h16 64c17.7 0 32 14.3 32 32s-14.3 32-32 32H288 272c-8.8 0-16 7.2-16 16s7.2 16 16 16H392.6l119.7-88.2c17.8-13.1 42.8-9.3 55.9 8.5zM193.6 384l0 0-.9 0c.3 0 .6 0 .9 0z"/></svg> Psychology: Emotions during the pandemic [<svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-167l80 80c9.4 9.4 24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-39 39V184c0-13.3-10.7-24-24-24s-24 10.7-24 24V318.1l-39-39c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9z"/></svg>](https://posit.cloud/content/4990398)
 
 
-- <svg aria-hidden="true" role="img" viewBox="0 0 384 512" style="height:1em;width:0.75em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M297.2 248.9C311.6 228.3 320 203.2 320 176c0-70.7-57.3-128-128-128S64 105.3 64 176c0 27.2 8.4 52.3 22.8 72.9c3.7 5.3 8.1 11.3 12.8 17.7l0 0c12.9 17.7 28.3 38.9 39.8 59.8c10.4 19 15.7 38.8 18.3 57.5H109c-2.2-12-5.9-23.7-11.8-34.5c-9.9-18-22.2-34.9-34.5-51.8l0 0 0 0c-5.2-7.1-10.4-14.2-15.4-21.4C27.6 247.9 16 213.3 16 176C16 78.8 94.8 0 192 0s176 78.8 176 176c0 37.3-11.6 71.9-31.4 100.3c-5 7.2-10.2 14.3-15.4 21.4l0 0 0 0c-12.3 16.8-24.6 33.7-34.5 51.8c-5.9 10.8-9.6 22.5-11.8 34.5H226.4c2.6-18.7 7.9-38.6 18.3-57.5c11.5-20.9 26.9-42.1 39.8-59.8l0 0 0 0 0 0c4.7-6.4 9-12.4 12.7-17.7zM192 128c-26.5 0-48 21.5-48 48c0 8.8-7.2 16-16 16s-16-7.2-16-16c0-44.2 35.8-80 80-80c8.8 0 16 7.2 16 16s-7.2 16-16 16zm0 384c-44.2 0-80-35.8-80-80V416H272v16c0 44.2-35.8 80-80 80z"/></svg> Business insights: Small automotive business
+- <svg aria-hidden="true" role="img" viewBox="0 0 384 512" style="height:1em;width:0.75em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M297.2 248.9C311.6 228.3 320 203.2 320 176c0-70.7-57.3-128-128-128S64 105.3 64 176c0 27.2 8.4 52.3 22.8 72.9c3.7 5.3 8.1 11.3 12.8 17.7l0 0c12.9 17.7 28.3 38.9 39.8 59.8c10.4 19 15.7 38.8 18.3 57.5H109c-2.2-12-5.9-23.7-11.8-34.5c-9.9-18-22.2-34.9-34.5-51.8l0 0 0 0c-5.2-7.1-10.4-14.2-15.4-21.4C27.6 247.9 16 213.3 16 176C16 78.8 94.8 0 192 0s176 78.8 176 176c0 37.3-11.6 71.9-31.4 100.3c-5 7.2-10.2 14.3-15.4 21.4l0 0 0 0c-12.3 16.8-24.6 33.7-34.5 51.8c-5.9 10.8-9.6 22.5-11.8 34.5H226.4c2.6-18.7 7.9-38.6 18.3-57.5c11.5-20.9 26.9-42.1 39.8-59.8l0 0 0 0 0 0c4.7-6.4 9-12.4 12.7-17.7zM192 128c-26.5 0-48 21.5-48 48c0 8.8-7.2 16-16 16s-16-7.2-16-16c0-44.2 35.8-80 80-80c8.8 0 16 7.2 16 16s-7.2 16-16 16zm0 384c-44.2 0-80-35.8-80-80V416H272v16c0 44.2-35.8 80-80 80z"/></svg> Business insights: Small automotive business [<svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-167l80 80c9.4 9.4 24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-39 39V184c0-13.3-10.7-24-24-24s-24 10.7-24 24V318.1l-39-39c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9z"/></svg>](https://posit.cloud/content/4990395)
 
-  - https://posit.cloud/content/4990395
+- <svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M192 64C86 64 0 150 0 256S86 448 192 448H448c106 0 192-86 192-192s-86-192-192-192H192zM496 168a40 40 0 1 1 0 80 40 40 0 1 1 0-80zM392 304a40 40 0 1 1 80 0 40 40 0 1 1 -80 0zM168 200c0-13.3 10.7-24 24-24s24 10.7 24 24v32h32c13.3 0 24 10.7 24 24s-10.7 24-24 24H216v32c0 13.3-10.7 24-24 24s-24-10.7-24-24V280H136c-13.3 0-24-10.7-24-24s10.7-24 24-24h32V200z"/></svg> Entertainment: Video Games reviews [<svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"/></svg>](https://posit.cloud/content/4990394)
 
-- <svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M192 64C86 64 0 150 0 256S86 448 192 448H448c106 0 192-86 192-192s-86-192-192-192H192zM496 168a40 40 0 1 1 0 80 40 40 0 1 1 0-80zM392 304a40 40 0 1 1 80 0 40 40 0 1 1 -80 0zM168 200c0-13.3 10.7-24 24-24s24 10.7 24 24v32h32c13.3 0 24 10.7 24 24s-10.7 24-24 24H216v32c0 13.3-10.7 24-24 24s-24-10.7-24-24V280H136c-13.3 0-24-10.7-24-24s10.7-24 24-24h32V200z"/></svg> Entertainment: Video Games reviews
 
-  - https://posit.cloud/content/4990394
+- <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M384 160c-17.7 0-32-14.3-32-32s14.3-32 32-32H544c17.7 0 32 14.3 32 32V288c0 17.7-14.3 32-32 32s-32-14.3-32-32V205.3L342.6 374.6c-12.5 12.5-32.8 12.5-45.3 0L192 269.3 54.6 406.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160c12.5-12.5 32.8-12.5 45.3 0L320 306.7 466.7 160H384z"/></svg> Economics: Big economic data [<svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-167l80 80c9.4 9.4 24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-39 39V184c0-13.3-10.7-24-24-24s-24 10.7-24 24V318.1l-39-39c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9z"/></svg>](https://posit.cloud/content/4990530)
 
-- <svg aria-hidden="true" role="img" viewBox="0 0 576 512" style="height:1em;width:1.12em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M384 160c-17.7 0-32-14.3-32-32s14.3-32 32-32H544c17.7 0 32 14.3 32 32V288c0 17.7-14.3 32-32 32s-32-14.3-32-32V205.3L342.6 374.6c-12.5 12.5-32.8 12.5-45.3 0L192 269.3 54.6 406.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160c12.5-12.5 32.8-12.5 45.3 0L320 306.7 466.7 160H384z"/></svg> Economics: Big economic data
 
-  - https://posit.cloud/content/4990530
+- <svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M294.2 1.2c5.1 2.1 8.7 6.7 9.6 12.1l10.4 62.4c-23.3 10.8-42.9 28.4-56 50.3c-14.6-9-31.8-14.1-50.2-14.1c-53 0-96 43-96 96c0 35.5 19.3 66.6 48 83.2c.8 31.8 13.2 60.7 33.1 82.7l-56 39.2c-4.5 3.1-10.3 3.8-15.4 1.6s-8.7-6.7-9.6-12.1L98.1 317.9 13.4 303.8c-5.4-.9-10-4.5-12.1-9.6s-1.5-10.9 1.6-15.4L52.5 208 2.9 137.2c-3.2-4.5-3.8-10.3-1.6-15.4s6.7-8.7 12.1-9.6L98.1 98.1l14.1-84.7c.9-5.4 4.5-10 9.6-12.1s10.9-1.5 15.4 1.6L208 52.5 278.8 2.9c4.5-3.2 10.3-3.8 15.4-1.6zM208 144c13.8 0 26.7 4.4 37.1 11.9c-1.2 4.1-2.2 8.3-3 12.6c-37.9 14.6-67.2 46.6-77.8 86.4C151.8 243.1 144 226.5 144 208c0-35.3 28.7-64 64-64zm69.4 276c11 7.4 14 22.3 6.7 33.3l-32 48c-7.4 11-22.3 14-33.3 6.7s-14-22.3-6.7-33.3l32-48c7.4-11 22.3-14 33.3-6.7zm96 0c11 7.4 14 22.3 6.7 33.3l-32 48c-7.4 11-22.3 14-33.3 6.7s-14-22.3-6.7-33.3l32-48c7.4-11 22.3-14 33.3-6.7zm96 0c11 7.4 14 22.3 6.7 33.3l-32 48c-7.4 11-22.3 14-33.3 6.7s-14-22.3-6.7-33.3l32-48c7.4-11 22.3-14 33.3-6.7zm96 0c11 7.4 14 22.3 6.7 33.3l-32 48c-7.4 11-22.3 14-33.3 6.7s-14-22.3-6.7-33.3l32-48c7.4-11 22.3-14 33.3-6.7zm74.5-116.1c0 44.2-35.8 80-80 80H288c-53 0-96-43-96-96c0-47.6 34.6-87 80-94.6l0-1.3c0-53 43-96 96-96c34.9 0 65.4 18.6 82.2 46.4c13-9.1 28.8-14.4 45.8-14.4c44.2 0 80 35.8 80 80c0 5.9-.6 11.7-1.9 17.2c37.4 6.7 65.8 39.4 65.8 78.7z"/></svg> Climate: Weather &amp; Air Quality in Schools [<svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-167l80 80c9.4 9.4 24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-39 39V184c0-13.3-10.7-24-24-24s-24 10.7-24 24V318.1l-39-39c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9z"/></svg>](https://posit.cloud/content/4990379)
 
-- <svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M294.2 1.2c5.1 2.1 8.7 6.7 9.6 12.1l10.4 62.4c-23.3 10.8-42.9 28.4-56 50.3c-14.6-9-31.8-14.1-50.2-14.1c-53 0-96 43-96 96c0 35.5 19.3 66.6 48 83.2c.8 31.8 13.2 60.7 33.1 82.7l-56 39.2c-4.5 3.1-10.3 3.8-15.4 1.6s-8.7-6.7-9.6-12.1L98.1 317.9 13.4 303.8c-5.4-.9-10-4.5-12.1-9.6s-1.5-10.9 1.6-15.4L52.5 208 2.9 137.2c-3.2-4.5-3.8-10.3-1.6-15.4s6.7-8.7 12.1-9.6L98.1 98.1l14.1-84.7c.9-5.4 4.5-10 9.6-12.1s10.9-1.5 15.4 1.6L208 52.5 278.8 2.9c4.5-3.2 10.3-3.8 15.4-1.6zM208 144c13.8 0 26.7 4.4 37.1 11.9c-1.2 4.1-2.2 8.3-3 12.6c-37.9 14.6-67.2 46.6-77.8 86.4C151.8 243.1 144 226.5 144 208c0-35.3 28.7-64 64-64zm69.4 276c11 7.4 14 22.3 6.7 33.3l-32 48c-7.4 11-22.3 14-33.3 6.7s-14-22.3-6.7-33.3l32-48c7.4-11 22.3-14 33.3-6.7zm96 0c11 7.4 14 22.3 6.7 33.3l-32 48c-7.4 11-22.3 14-33.3 6.7s-14-22.3-6.7-33.3l32-48c7.4-11 22.3-14 33.3-6.7zm96 0c11 7.4 14 22.3 6.7 33.3l-32 48c-7.4 11-22.3 14-33.3 6.7s-14-22.3-6.7-33.3l32-48c7.4-11 22.3-14 33.3-6.7zm96 0c11 7.4 14 22.3 6.7 33.3l-32 48c-7.4 11-22.3 14-33.3 6.7s-14-22.3-6.7-33.3l32-48c7.4-11 22.3-14 33.3-6.7zm74.5-116.1c0 44.2-35.8 80-80 80H288c-53 0-96-43-96-96c0-47.6 34.6-87 80-94.6l0-1.3c0-53 43-96 96-96c34.9 0 65.4 18.6 82.2 46.4c13-9.1 28.8-14.4 45.8-14.4c44.2 0 80 35.8 80 80c0 5.9-.6 11.7-1.9 17.2c37.4 6.7 65.8 39.4 65.8 78.7z"/></svg> Climate: Weather &amp; Air Quality in Schools
+- &lt;img src="images/crab-svgrepo-com.svg" alt="Mud Crab Icon" style="width: 1em; height: 1em;"/&gt; Ecology: Mud Crab Tracking [<svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-167l80 80c9.4 9.4 24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-39 39V184c0-13.3-10.7-24-24-24s-24 10.7-24 24V318.1l-39-39c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9z"/></svg>](https://posit.cloud/content/)
 
-  - https://posit.cloud/content/4990379
+
 ---
 
 # Thanks!

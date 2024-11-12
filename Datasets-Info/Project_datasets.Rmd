@@ -1,7 +1,7 @@
 ---
 title: "Choose your project"
 institute: "UNSW Data Science Hub"
-date: "21-11-2022"
+date: "21-11-2024"
 output:
   xaringan::moon_reader:
     css: [xaringan-themer.css, "css/footer.css"]
@@ -212,9 +212,9 @@ Increase or decrease of emotions by age? differences between groups?
 
 ---
 
-## Emotions ... Visualise
+## Emotions ... 
 
-Combine scatterplot and regression lines
+### Visualise
 
 .pull-left[
 ```{r emo-eda, echo=FALSE, warning=FALSE, message=FALSE}
@@ -260,44 +260,43 @@ This is a dataset of the jobs performed by a small automotive business located i
 
 ---
 
-## Small business ... Data
+## Small business ... 
+
+#### Data
 
 The data will be provided by uDASH staff.
 
 
-```{r message=FALSE}
-auto_data <- read_csv("data/small_business_invoices.csv")
-
-auto_data %>% slice(1:5)
-```
-
----
-
-## Small business ... Cleaning and transformation
-
-The dataset was entered by hand and thus has inconsistencies and omissions that will require cleaning.  Some data cleaning has already been performed.
-
-TO DO: Assign data type (numeric, factor, date), handle missing information, group and summarise, etc.
-
-
-```{r}
-auto_data <-
-  auto_data %>%
+```{r message=FALSE, echo=FALSE, warning=FALSE}
+auto_data <- read_csv("data/small_business_invoices.csv") |>
   mutate(transaction_date=dmy(TRANSACTION_DATE),
-         service_date=dmy(LAST_SERVICE)) %>%
-  filter(!is.na(transaction_date)) %>%
-  group_by(INVOICE_NO,Postcode,transaction_date,service_date) %>%
+         service_date=dmy(LAST_SERVICE)) |>
+  filter(!is.na(transaction_date))|>
+  group_by(INVOICE_NO,Postcode,transaction_date,service_date) |>
   summarise(total_cost=sum(TOTAL),vehicle_year=max(VEHICLE_YEAR))
 ```
 
+#### Cleaning and transformation
+
+The dataset was entered by hand and thus has inconsistencies and omissions that will require cleaning.  Some data cleaning has already been performed. TO DO: Assign data type (numeric, factor, date), handle missing information, group and summarise, etc.
+
+
+#### Explore
+
+Histogram of variables, etc
+
+####  Model
+
+Linear regression
+
 ---
 
-## Small business ...  Explore
+## Small business ... 
 
-Histogram of variables
+#### Visualise
 
 .pull-left[
-```{r smallbiz-eda, eval=FALSE}
+```{r smallbiz-eda, echo=FALSE, warning=FALSE, message=FALSE}
 ggplot(auto_data) +
   geom_histogram(aes(x=total_cost)) +
   scale_x_continuous(trans = "sqrt",
@@ -309,27 +308,7 @@ ggplot(auto_data) +
 ]
 
 .pull-right[
-```{r smallbiz-eda-out, ref.label="smallbiz-eda", echo=FALSE, warning=FALSE, message=FALSE}
-```
-]
-
----
-
-## Small business ... Model
-
-Linear regression
-
-```{r }
-model <- lm(total_cost ~ vehicle_year, data=auto_data)
-summary(model)
-```
-
----
-
-## Small business ... Visualise
-
-.pull-left[
-```{r smallbiz-viz, eval=FALSE}
+```{r smallbiz-viz, echo=FALSE, warning=FALSE, message=FALSE}
 ggplot(auto_data) +
   geom_boxplot(aes(y=total_cost,
                    x=year(transaction_date),
@@ -341,12 +320,6 @@ ggplot(auto_data) +
         axis.text = element_text(size = 12,))
 ```
 ]
-
-.pull-right[
-```{r smallbiz-viz-out, ref.label="smallbiz-viz", echo=FALSE, warning=FALSE, message=FALSE}
-```
-]
-
 
 ---
 
@@ -375,28 +348,17 @@ The dataset presented here are the metascores of videogames from 2000 to 2018
 
 ---
 
-## Video Games ... Data
+## Video Games ... 
+
+#### Data
 
 The data is available from
 [`r fa(name = "link")` kaggle](https://www.kaggle.com/datasets/destring/metacritic-reviewed-games-since-2000), will be provided by uDASH staff.
 
 
-```{r message=FALSE}
-games_data <- read_csv("data/video-games.csv")
-
-games_data %>% slice(1:10)
-```
-
----
-
-## Video Games ... Cleaning and transformation
-
-Transform userscore from character to numeric, transform date from character to date, group consoles:
-
-```{r}
-games_data <-
-  games_data %>%
-  filter(!userscore %in% "tbd") %>%
+```{r message=FALSE, echo=FALSE}
+games_data <- read_csv("data/video-games.csv") |>
+  filter(!userscore %in% "tbd") |>
   mutate(userscore=as.numeric(userscore),
         newdate=mdy(date),
         manufacturer=case_when(
@@ -406,17 +368,32 @@ games_data <-
           console %in% c('DC') ~ "SEGA",
           TRUE ~ console
         ))
+
 ```
 
----
+#### Cleaning and transformation
 
-## Video Games ...  Explore
+Transform userscore from character to numeric, transform date from character to date, group consoles, etc
+
+####  Explore
 
 Boxplots of variables
 
+#### Model
+
+Multiple linear regression
+
+
+---
+
+## Video Games ... 
+
+#### Visualise
+
+
 
 .pull-left[
-```{r game-eda, eval=FALSE}
+```{r game-eda, echo=FALSE, warning=FALSE, message=FALSE}
 ggplot(games_data) +
   geom_boxplot(aes(y=metascore,
                    x=manufacturer,
@@ -429,28 +406,7 @@ ggplot(games_data) +
 ]
 
 .pull-right[
-```{r game-eda-out, ref.label="game-eda", echo=FALSE, warning=FALSE, message=FALSE}
-```
-]
-
----
-
-## Video Games ... Model
-
-Multiple linear regression
-
-```{r }
-model <- lm(userscore ~ metascore + manufacturer, data=games_data)
-summary(model)
-```
-
----
-
-## Video Games ... Visualise
-
-
-.pull-left[
-```{r game-viz, eval=FALSE}
+```{r game-viz, echo=FALSE, warning=FALSE, message=FALSE}
 ggplot(games_data) +
   geom_point(aes(x=metascore,
                 y=userscore,
@@ -458,11 +414,6 @@ ggplot(games_data) +
   xlab("Metascore") +
   ylab("Userscore") +
   theme(legend.position='none')
-```
-]
-
-.pull-right[
-```{r game-viz-out, ref.label="game-viz", echo=FALSE, warning=FALSE, message=FALSE}
 ```
 ]
 
@@ -496,13 +447,15 @@ Start with a small subset of variables, and add more if you like
 
 ---
 
-## Big economic data ... Data
+## Big economic data ... 
+
+#### Data
 
 Data available from the [`r fa(name = "link")` FRED homepage](https://research.stlouisfed.org/econ/mccracken/fred-databases/)
 
 You can use a function provided by uDASH staff to get the data you need.
 
-```{r}
+```{r echo=FALSE}
 download_data <- function() {
 
   # Load FRED-MD
@@ -518,9 +471,8 @@ download_data <- function() {
   data <- data %>%
       mutate(date = yearmonth(date))
 }
-```
 
-```{r include=FALSE}
+
 dataset.file <- "data/economic-data.rda"
 if (file.exists(dataset.file)) {
   load(dataset.file)
@@ -528,15 +480,7 @@ if (file.exists(dataset.file)) {
   eco_data <- download_data()
   save(file=dataset.file,eco_data)
 }
-```
 
----
-
-## Big economic data ... Cleaning and transformation
-
-Select a subset of features, exclude outliers
-
-```{r}
   eco_data <- eco_data %>%
     transmute(
       Date = date,
@@ -551,34 +495,19 @@ Select a subset of features, exclude outliers
       )
 ```
 
----
+#### Cleaning and transformation
 
-## Big economic data ... Explore
+Select a subset of features, exclude outliers.
 
-Univariate statistics, time series
+#### Explore
 
-.pull-left[
-```{r eco-eda, eval=FALSE}
-ggplot(eco_data,
-       aes(Date, UnemploymentRate)) +
-  geom_point() +
-  theme(axis.text = element_text(size = 12,))
-```
-]
+Univariate statistics, time series.
 
-.pull-right[
-```{r eco-eda-out, ref.label="eco-eda", echo=FALSE, warning=FALSE, message=FALSE}
-```
-]
-
-
----
-
-## Big economic data ... Model
+#### Model
 
 Make data _stationary_ (more suitable for regression), apply multiple linear regression, select best explanatory variables
 
-```{r}
+```{r include=FALSE}
 eco_data_transformed <- eco_data %>%
   mutate(
     IndustrialProduction = difference(log(IndustrialProduction), diff = 1),
@@ -596,12 +525,21 @@ model <- lm(UnemploymentRate ~ ConsumerPriceIndex + IndustrialProduction + Perso
 
 ---
 
-## Big economic data ... Visualise
+## Big economic data ... 
 
-Combine scatterplot and regression lines
+#### Visualise
 
 .pull-left[
-```{r eco-viz, eval=FALSE}
+```{r eco-eda, echo=FALSE, warning=FALSE,message=FALSE}
+ggplot(eco_data,
+       aes(Date, UnemploymentRate)) +
+  geom_point() +
+  theme(axis.text = element_text(size = 12,))
+```
+]
+
+.pull-right[
+```{r eco-viz, echo=FALSE, warning=FALSE,message=FALSE}
 ggplot(data=eco_data_transformed,
        aes(y=UnemploymentRate,
            x=IndustrialProduction,
@@ -609,11 +547,6 @@ ggplot(data=eco_data_transformed,
   geom_point() +
   geom_smooth(method = 'loess') +
   theme(legend.position='none')
-```
-]
-
-.pull-right[
-```{r eco-viz-out, ref.label="eco-viz", echo=FALSE, warning=FALSE,message=FALSE}
 ```
 ]
 
@@ -651,49 +584,44 @@ Since measurements are taken every 20 minutes, we have 43771 data points!
 
 ---
 
-## Weather & Air Quality ... Data
+## Weather & Air Quality ... 
+
+#### Data
 
 Detailed time-series weather and air-quality data collected at Sydney schools are available for download via [TERN](https://www.tern.org.au/news-swaq-data/), but a cleaned version will be provided by uDASH staff.
 
 
-```{r message=FALSE}
+```{r message=FALSE, echo=FALSE}
 # reading in data
-airqual <- read_csv("data/air-quality.csv") %>%
+airqual <- read_csv("data/air-quality.csv") |>
   # nice names
-  clean_names()
-
-# preview
-airqual %>%
-  head(3)
-```
-
----
-
-## Weather & Air Quality ... Cleaning and transformation
-
-Fix dates, reshape table (from wide to long format), filter missing data...
-
-```{r}
-airqual <- airqual %>%
+  clean_names() |>
   # Sydney (AEST) is UTC +10
   mutate(time_local = time + hours(10))
 
+```
+
+#### Cleaning and transformation
+
+Fix dates, reshape table (from wide to long format), filter missing data...
+
+```{r message=FALSE, echo=FALSE}
+
 # changing column structure of data
-airqual_wide <- airqual %>%
+airqual_wide <- airqual |>
   # now that we have local time don't need utc
-  select(-time) %>%
-  pivot_longer(-time_local) %>%
+  select(-time) |>
+  pivot_longer(-time_local) |>
   mutate(var_type = as.factor(str_sub(name, start = 6)),
-         location = as.factor(str_sub(name, end = 4))) %>%
-  select(-name) %>%
+         location = as.factor(str_sub(name, end = 4))) |>
+  select(-name) |>
   # wider back to the format we want
   pivot_wider(names_from = var_type, values_from = value)
 ```
 
+#### Explore
 
----
-
-## Weather & Air Quality ...  Explore
+Relationships between key variables for each site.
 
 ```{r, echo=FALSE}
 school_with_airqual_measurements <- airqual_wide %>%
@@ -726,10 +654,21 @@ unsw_data <- airqual_clean %>%
   mutate(dow = as.factor(wday(time_local)))
 ```
 
-Plotting relationship between $NO_2$ and key variables for one site (UNSW):
+#### Model
+
+Multiple linear regression, for example between temperature, relative humidity, and NO<sub>2</sub> concentrations.
+
+---
+
+
+## Weather & Air Quality ... 
+
+#### Visualise
+
+Combining predictions with data to plot the results of the model. Plotting relationship between $NO_2$ and key variables for one site (UNSW):
 
 .pull-left[
-```{r airq-eda, eval=FALSE}
+```{r airq-eda, echo=FALSE, warning=FALSE, message=FALSE}
 unsw_data %>%
   select(hour, t, rh, no2) %>%
   pivot_longer(-no2) %>%
@@ -742,33 +681,9 @@ unsw_data %>%
 ]
 
 .pull-right[
-```{r airq-eda-out, ref.label="airq-eda", echo=FALSE, warning=FALSE, message=FALSE}
-```
-]
-
----
-
-## Weather & Air Quality ... Model
-
-Multiple linear regression, for example between temperature, relative humidity, and NO<sub>2</sub> concentrations.
-
-```{r }
-# fitting multiple linear regression
+```{r airq-viz, echo=FALSE, warning=FALSE, message=FALSE}
 model <- lm( no2 ~ t + rh + dow,
              data = unsw_data)
-summary(model)
-```
-
----
-
-
-## Weather & Air Quality ... Visualise
-
-Combining predictions with data to plot the results of the model
-
-
-.pull-left[
-```{r airq-viz, eval=FALSE}
 cbind(unsw_data, pred = predict(model, newdata = unsw_data)) %>%
   ggplot(aes(x = no2, y = pred)) +
   geom_point() +
@@ -780,12 +695,66 @@ cbind(unsw_data, pred = predict(model, newdata = unsw_data)) %>%
 ```
 ]
 
-.pull-right[
-```{r airq-viz-out, ref.label="airq-viz", echo=FALSE, warning=FALSE, message=FALSE}
-```
-]
+---
+
 
 ---
+
+class: inverse, center, middle
+
+#  <img src="images/crab-svgrepo-com.svg" alt="Mud Crab Icon" style="width: 1em; height: 1em;"/> Ecology: Mud Crab Tracking
+
+>Environmental factors such as water temperature, conductivity, and time of day significantly influence the behavioral patterns of Giant Mud Crabs, including their movement, activity levels, and periods of heightened activity
+
+*** Are there significant correlations or patterns that can be explored to understand response to climate variability? *** 
+
+---
+
+## Mud Crab Tracking  ...
+
+Crabs were tracked using acoustic telemetry, which involved attaching tags with distinct sounds.To pick up these sounds, receiver stations, functioning like listening posts, were set up in the study area. When a crab was within range of three or more receivers, its exact location could be determined. Acceleration was measured along three axes for a period of 20 seconds, recording 5 measurements per second (5 Hz).
+    <div style="float:right;">
+    <img src="images/crab_speed_measure.jpeg" alt="Crab Speed Measure"/>
+  </div>
+- Primary variables:
+  - crab: Unique identifier for each crab
+  - sex: male/female
+  - cl_mm: Size of the crab's shell in millimeters
+  - time: Timestamp  YYYY-MM-DD hh:mm:ss
+  - lat, lon: Geospatial measurements in degrees
+  - x, y: The easting and northing of the detection in meters 
+  - accel: The acceleration of the crab in meters per second squared 
+  - temperature_c: Water temperature in degrees Celsius 
+  - conductivity_ms_cm: Electrical conductivity in millisiemens per centimeter
+---
+
+## Mud Crab Tracking ... 
+
+
+#### Data
+
+Data provided by uDASH staff.
+
+#### Cleaning and transformation
+
+Data types and formats for handling date and time are particularly important for data analysis.
+
+#### Explore
+
+Plot to visualize the paths of individual crabs based on their spatial coordinates
+Potential differences in behavior between individual crabs (or possibly between sexes)!
+
+#### Model
+
+- Some questions you may consider asking of this data
+  - What effect does water temperature have on crab behavior?
+  - What effect does conductivity have on crab behavior?
+  - What effect does the time of day have on crab behavior?
+---
+
+## Mud Crab Tracking ... 
+
+#### Visualise
 
 
 ---
@@ -794,26 +763,22 @@ class: middle
 
 # Choose your project
 
-- `r fa(name = "hand-holding-heart")` Psychology: Emotions during the pandemic 
-
-  - https://posit.cloud/content/4990398
+- `r fa(name = "hand-holding-heart")` Psychology: Emotions during the pandemic [`r fa(name = "cloud-arrow-down")`](https://posit.cloud/content/4990398)
 
 
-- `r fa(name = "lightbulb")` Business insights: Small automotive business
+- `r fa(name = "lightbulb")` Business insights: Small automotive business [`r fa(name = "cloud-arrow-down")`](https://posit.cloud/content/4990395)
 
-  - https://posit.cloud/content/4990395
+- `r fa(name = "gamepad")` Entertainment: Video Games reviews [`r fa(name = "cloud-arrow-up")`](https://posit.cloud/content/4990394)
 
-- `r fa(name = "gamepad")` Entertainment: Video Games reviews
 
-  - https://posit.cloud/content/4990394
+- `r fa(name = "arrow-trend-up")` Economics: Big economic data [`r fa(name = "cloud-arrow-down")`](https://posit.cloud/content/4990530)
 
-- `r fa(name = "arrow-trend-up")` Economics: Big economic data
 
-  - https://posit.cloud/content/4990530
+- `r fa(name = "cloud-sun-rain")` Climate: Weather & Air Quality in Schools [`r fa(name = "cloud-arrow-down")`](https://posit.cloud/content/4990379)
 
-- `r fa(name = "cloud-sun-rain")` Climate: Weather & Air Quality in Schools
+- <img src="images/crab-svgrepo-com.svg" alt="Mud Crab Icon" style="width: 1em; height: 1em;"/> Ecology: Mud Crab Tracking [`r fa(name = "cloud-arrow-down")`](https://posit.cloud/content/)
 
-  - https://posit.cloud/content/4990379
+
 ---
 
 # Thanks!
